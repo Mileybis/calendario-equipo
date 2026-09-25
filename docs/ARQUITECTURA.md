@@ -2,7 +2,7 @@
 
 ## 1. Contexto
 
-El equipo **Advisory · Tech Enablement** necesita saber quién va a la oficina y quién trabaja remoto cada día, respetando reglas de trabajo híbrido. Antes se hacía en Excel; esta app centraliza la información, aplica las reglas y muestra los cambios en tiempo real.
+Un equipo necesita saber quién va a la oficina y quién trabaja remoto cada día, respetando reglas de trabajo híbrido. Antes se hacía en Excel; esta app centraliza la información, aplica las reglas y muestra los cambios en tiempo real.
 
 **Restricciones del entorno**
 - No se puede instalar software en los equipos de la empresa.

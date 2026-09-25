@@ -1,6 +1,5 @@
 -- =====================================================================
 --  Hybrid Work Planner — ESQUEMA COMPLETO (instalación desde cero)
---  Advisory · Tech Enablement
 --
 --  Uso: Supabase → SQL Editor → New query → pegar todo → Run
 --  Equivale a aplicar las migraciones 001 a 005 en orden, sin datos de prueba.

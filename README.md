@@ -1,7 +1,5 @@
 # Hybrid Work Planner
 
-**Advisory · Tech Enablement**
-
 Aplicación web para planificar los días de **oficina** y **trabajo remoto** del equipo. Cada persona define su semana, el equipo ve los cambios en tiempo real y las reglas de trabajo híbrido se aplican automáticamente.
 
 🔗 **Demo en vivo:** https://mileybis.github.io/calendario-equipo/
@@ -113,6 +111,3 @@ Todo lo configurable está en **`assets/js/config.js`**:
 | [Arquitectura](docs/ARQUITECTURA.md) | Perfil técnico |
 | [Decisiones (ADR)](docs/adr/) | Perfil técnico |
 
----
-
-**Advisory – Tech Enablement · 2026**
