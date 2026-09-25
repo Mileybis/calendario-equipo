@@ -1,6 +1,6 @@
 # Guía de uso — Hybrid Work Planner
 
-Manual rápido de uso de la aplicación.
+Manual rápido para el equipo **Advisory · Tech Enablement**.
 
 🔗 https://mileybis.github.io/calendario-equipo/
 

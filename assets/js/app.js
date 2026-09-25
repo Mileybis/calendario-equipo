@@ -875,7 +875,7 @@ function goLocal(){
 function gateMode(mode){
   const M = {
     login:   ['Bienvenido de nuevo', 'Inicia sesión para ver tu semana.'],
-    signup:  ['Crea tu cuenta', 'Únete al calendario del equipo.'],
+    signup:  ['Crea tu cuenta', 'Únete al calendario de Tech Enablement.'],
     reset:   ['Recupera tu acceso', 'Te enviaremos un enlace a tu correo para crear una contraseña nueva.'],
     newpass: ['Crea una contraseña nueva', 'Escríbela dos veces para confirmarla.']
   };
