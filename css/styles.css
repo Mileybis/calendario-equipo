@@ -153,7 +153,7 @@ tr.me-row th.name-col{background:var(--me);border-radius:12px}
 
 .cell{width:100%;min-height:64px;border-radius:12px;border:1.5px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;font-size:.8rem;font-weight:600;padding:6px 4px;transition:transform .12s ease,border-color .12s ease}
 .cell .e{font-size:1.15rem;line-height:1}
-.cell .note{font-size:.7rem;font-weight:500;opacity:.85;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.cell .note{font-size:.7rem;font-weight:500;font-style:italic;opacity:.8;margin-top:1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
 .cell.R{background:var(--R-bg);color:var(--R-ink)} .cell.O{background:var(--O-bg);color:var(--O-ink)}
 .cell.V{background:var(--V-bg);color:var(--V-ink)} .cell.I{background:var(--I-bg);color:var(--I-ink)}
 .cell.N{background:transparent;border:1.5px dashed var(--line);color:var(--muted);font-weight:500}
@@ -285,13 +285,16 @@ td.hol-cell span{font-size:.78rem;line-height:1.35;display:block}
 .fi{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
 .fi .avatar{width:34px;height:34px}
 .fi .avatar.animal{font-size:1.15rem}
-.fi-top{font-size:.92rem}
+.fi-top{font-size:.92rem;line-height:34px}
 .fi-top b{font-weight:700}
-.fi-time{font-size:.78rem;color:var(--muted)}
-.fi ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px}
-.fi li{font-size:.83rem;background:var(--surface-2);border-radius:9px;padding:6px 9px}
-.fi li .arrow{color:var(--muted);margin:0 4px}
-.fi li em{display:block;font-style:normal;color:var(--muted);font-size:.78rem;margin-top:2px}
+.fi-top span{font-size:.78rem;color:var(--muted)}
+.fi ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:6px}
+.fi li{font-size:.83rem;background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.fi-day{font-size:.78rem;color:var(--muted);margin-bottom:5px}
+.fi-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fi-arrow{color:var(--muted);font-size:.9rem}
+.fi-note{margin-top:5px;font-size:.8rem;color:var(--muted);font-style:italic;overflow-wrap:anywhere}
+.chip.sm{font-size:.74rem;padding:2px 8px;gap:4px}
 .fi .more{font-size:.8rem;color:var(--muted);background:none;padding:2px 0}
 .empty{color:var(--muted);font-size:.9rem;text-align:center;padding:26px 8px;list-style:none}
 .empty span{font-size:1.8rem;display:block;margin-bottom:6px}

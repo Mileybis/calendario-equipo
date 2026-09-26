@@ -8,7 +8,7 @@ const ESTADOS = {
   O: { icon: ic('building'), label: 'Oficina' },
   V: { icon: ic('beach'), label: 'Vacaciones' },
   I: { icon: ic('stethoscope'), label: 'Incapacidad' },
-  E: { icon: ic('confetti'), label: 'Evento' },
+  E: { icon: ic('calendar-star'), label: 'Evento' },
   P: { icon: ic('clock'), label: 'Permiso' },
   VL: { icon: ic('heart-handshake'), label: 'Voluntariado' },
   N: { icon: ic('plus'), label: 'Sin definir' },
@@ -89,6 +89,7 @@ const state = {
   view: 'mine', year: 0, month: 0, weekStart: null, mobileDay: -1, teamMode: 'week', teamDay: null,
   editing: false, pending: {}, mode: 'connecting'
 };
+const MAX_ACTIVIDAD = 300;   // cambios recientes que se cargan para Actualizaciones
 const personById = id => state.people.find(p => p.id === id);
 const pendingCount = () => Object.keys(state.pending).length;
 
@@ -228,7 +229,7 @@ function cellBtn(p, d, opts = {}){
     ${pend ? '<span class="dot"></span>' : ''}${locked ? `<span class="lock">${ic('lock')}</span>` : ''}
     ${opts.mini ? `<span class="n">${d.getDate()}</span>` : ''}
     ${icon ? `<span class="e">${icon}</span>` : ''}<span class="t">${label}</span>
-    ${e.note && !opts.mini && !opts.row ? `<span class="note">${ic('note')} ${esc(e.note)}</span>` : ''}
+    ${e.note && !opts.mini && !opts.row ? `<span class="note">${esc(e.note)}</span>` : ''}
   </button>`;
 }
 function dayHead(d){
@@ -283,19 +284,40 @@ function renderControls(){
   document.getElementById('tabMine').setAttribute('aria-selected', state.view === 'mine');
 }
 
+const isMonthView = () => state.view === 'team' && state.teamMode === 'month';
+const statHTML = (cls, icon, value, label, pct) =>
+  `<div class="stat ${cls}"><span class="ico">${ic(icon)}</span><div><b>${value}</b><small>${label}</small><span class="sbar"><i style="width:${Math.round(pct)}%"></i></span></div></div>`;
+
 function renderSummary(){
+  const el = document.getElementById('summary'), n = state.people.length;
+  if (isMonthView()){
+    // Total del mes: días de todo el equipo en cada estado
+    const last = new Date(state.year, state.month + 1, 0).getDate();
+    const work = [];
+    for (let i = 1; i <= last; i++){ const d = new Date(state.year, state.month, i); if (isWorkday(d)) work.push(d); }
+    const c = emptyCounts();
+    work.forEach(d => state.people.forEach(p => { c[entry(p.id, d).s]++; }));
+    const total = work.length * n || 1, aus = ausentes(c);
+    el.innerHTML =
+      statHTML('O', 'building', c.O, 'Días en oficina', c.O / total * 100) +
+      statHTML('R', 'home', c.R, 'Días en remoto', c.R / total * 100) +
+      statHTML('V', 'door-exit', aus, 'Días de ausencia', aus / total * 100) +
+      statHTML('N', 'help-circle', c.N, 'Días sin definir', c.N / total * 100) +
+      statHTML('L', 'calendar-week', work.length, `Días laborables · ${MESES[state.month]}`, 100);
+    return;
+  }
+  // Semana: foto de hoy
   const t = hoyReal(), off = !isWorkday(t), c = off ? null : countsFor(t);
-  const v = x => off ? '—' : x;
-  const lbl = s => off ? (holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable') : s;
-  const wi = weekInfo(state.weekStart), n = state.people.length;
-  const de = s => off ? lbl(s) : `${s} · de ${n}`;
-  const bar = x => `<span class="sbar"><i style="width:${off || !n ? 0 : Math.round(x / n * 100)}%"></i></span>`;
-  document.getElementById('summary').innerHTML = `
-    <div class="stat O"><span class="ico">${ic('building')}</span><div><b>${v(c?.O)}</b><small>${de('En oficina')}</small>${bar(c?.O)}</div></div>
-    <div class="stat R"><span class="ico">${ic('home')}</span><div><b>${v(c?.R)}</b><small>${de('En remoto')}</small>${bar(c?.R)}</div></div>
-    <div class="stat V"><span class="ico">${ic('door-exit')}</span><div><b>${v(c ? ausentes(c) : 0)}</b><small>${de('Ausentes')}</small>${bar(c ? ausentes(c) : 0)}</div></div>
-    <div class="stat N"><span class="ico">${ic('help-circle')}</span><div><b>${v(c?.N)}</b><small>${off ? lbl('') : 'Sin definir'}</small>${bar(c?.N)}</div></div>
-    <div class="stat L"><span class="ico">${ic('calendar-week')}</span><div><b>${wi.work}</b><small>Días laborables</small><span class="sbar"><i style="width:${wi.work * 20}%"></i></span></div></div>`;
+  const offMsg = holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable';
+  const val = x => off ? '—' : x, pct = x => off || !n ? 0 : x / n * 100;
+  const lbl = s => off ? offMsg : `${s} hoy · de ${n}`;
+  const wi = weekInfo(state.weekStart);
+  el.innerHTML =
+    statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O)) +
+    statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R)) +
+    statHTML('V', 'door-exit', val(c ? ausentes(c) : 0), lbl('Ausentes'), pct(c ? ausentes(c) : 0)) +
+    statHTML('N', 'help-circle', val(c?.N), off ? offMsg : 'Sin definir hoy', pct(c?.N)) +
+    statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20);
 }
 
 function weekNav(fw, sub){
@@ -452,6 +474,10 @@ function renderMine(){
 }
 
 function renderThisWeek(){
+  // En la vista Mes no se muestra: el calendario del mes ya da esa información
+  const box = document.getElementById('thisWeek');
+  box.hidden = isMonthView();
+  if (box.hidden) return;
   const fw = focusWeek(), t = hoyReal(), n = state.people.length || 1;
   // Inicial de cada persona con el color de su avatar
   const inicial = p => {
@@ -483,26 +509,42 @@ function renderThisWeek(){
     </div>`;
 }
 
+// Periodo que se está viendo: el mes en Equipo › Mes; la semana en los demás casos
+function feedRange(){
+  if (state.view === 'team' && state.teamMode === 'month'){
+    return { from: ymd(new Date(state.year, state.month, 1)), to: ymd(new Date(state.year, state.month + 1, 0)),
+      label: `Cambios de ${MESES[state.month]} ${state.year}`, empty: 'Sin cambios este mes.' };
+  }
+  const days = [0,1,2,3,4].map(i => addDays(state.weekStart, i));
+  return { from: ymd(state.weekStart), to: ymd(addDays(state.weekStart, 6)),
+    label: `Cambios del ${weekRange(days)}`, empty: 'Sin cambios esta semana.' };
+}
+const statusPill = e => {
+  const s = e && ESTADOS[e.s] && !['N', 'F'].includes(e.s) ? e.s : 'N';
+  return `<span class="chip sm ${s}">${s === 'N' ? '' : ESTADOS[s].icon}${ESTADOS[s].label}</span>`;
+};
 function renderFeed(){
-  const items = state.activity.slice(0, 40).map(a => {
+  const r = feedRange();
+  const items = state.activity.map(a => {
+    const ch = (a.changes || []).filter(c => c.date >= r.from && c.date <= r.to);
+    if (!ch.length) return '';
     const au = personById(a.author);
-    const ch = a.changes || [];
     const lis = ch.slice(0, 4).map(c => {
       const d = parseYmd(c.date), target = personById(c.pid);
-      const who = c.pid !== a.author && target ? `<b>${esc(target.name)}</b> · ` : '';
-      const from = c.from?.s && ESTADOS[c.from.s] && c.from.s !== 'N' ? ESTADOS[c.from.s].icon : '—';
-      return `<li>${who}${shortDate(d)}: ${from}<span class="arrow">→</span>${statusText(normalize(c.to, d))}${c.to?.note ? `<em>${ic('note')} ${esc(c.to.note)}</em>` : ''}</li>`;
+      const who = c.pid !== a.author && target ? ` · ${esc(target.name)}` : '';
+      return `<li><div class="fi-day">${shortDate(d)}${who}</div>
+        <div class="fi-flow">${statusPill(c.from)}${ic('arrow-right', 'fi-arrow')}${statusPill(normalize(c.to, d))}</div>
+        ${c.to?.note ? `<div class="fi-note">"${esc(c.to.note)}"</div>` : ''}</li>`;
     }).join('');
     return `<li class="fi">${avatar(au)}<div>
-      <div class="fi-top"><b>${esc(au ? au.name : 'Alguien')}</b> subió ${plural(ch.length, 'cambio', 'cambios')}</div>
-      <div class="fi-time">${timeAgo(a.at)}</div>
+      <div class="fi-top"><b>${esc(au ? au.name : 'Alguien')}</b> <span>· ${timeAgo(a.at)}</span></div>
       <ul>${lis}${ch.length > 4 ? `<li class="more">y ${ch.length - 4} más</li>` : ''}</ul>
     </div></li>`;
   }).join('');
   document.getElementById('feed').innerHTML = `
     <h2 class="title">Actualizaciones</h2>
-    <p class="hint">Cambios recientes del equipo${state.mode === 'live' ? ' · en vivo' : ''}</p>
-    <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>Todavía no hay cambios.</li>`}</ul>`;
+    <p class="hint">${r.label}${state.mode === 'live' ? ' · en vivo' : ''}</p>
+    <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>${r.empty}</li>`}</ul>`;
 }
 
 function monthInfo(y, m){
@@ -1066,7 +1108,7 @@ function ensureVisibleRange(){
   if (state.weekStart) loadRange(addDays(state.weekStart, -1), addDays(state.weekStart, 6));
 }
 async function loadActivity(){
-  const { data } = await sb.from('activity').select('*').order('at', { ascending: false }).limit(40);
+  const { data } = await sb.from('activity').select('*').order('at', { ascending: false }).limit(MAX_ACTIVIDAD);
   state.activity = (data || []).map(rowToAct);
 }
 let liveStarting = false;
@@ -1102,7 +1144,7 @@ async function startLive(session){
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity' }, ({ new: n }) => {
       if (!state.activity.some(a => a.id === String(n.id))) state.activity.unshift(rowToAct(n));
-      state.activity = state.activity.slice(0, 40);
+      state.activity = state.activity.slice(0, MAX_ACTIVIDAD);
       renderAll();
     })
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'activity' }, ({ old: o }) => {
