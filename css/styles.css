@@ -93,10 +93,25 @@ button:disabled{cursor:not-allowed}
 .summary{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:22px}
 .stat{padding:16px 18px;display:flex;align-items:center;gap:12px;min-width:0}
 .stat + .stat{border-left:1px solid var(--line)}
-.stat .ico{font-size:1.2rem;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);flex:none}
-.stat.O .ico{background:var(--O-bg)} .stat.R .ico{background:var(--R-bg)} .stat.V .ico{background:var(--V-bg)} .stat.L .ico{background:var(--lock-bg)}
+.stat .ico{font-size:1.3rem;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);flex:none}
+.stat.O .ico{background:var(--O-bg);color:var(--O-ink)} .stat.R .ico{background:var(--R-bg);color:var(--R-ink)}
+.stat.V .ico{background:var(--V-bg);color:var(--V-ink)} .stat.L .ico{background:var(--E-bg);color:var(--E-ink)}
+.stat > div{flex:1;min-width:0}
 .stat b{display:block;font-size:1.4rem;line-height:1.1;font-weight:800}
-.stat small{color:var(--muted);font-size:.82rem;display:block;line-height:1.3}
+.stat small{color:var(--muted);font-size:.8rem;display:block;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbar{display:block;height:4px;border-radius:4px;background:var(--surface-2);margin-top:7px;overflow:hidden}
+.sbar i{display:block;height:100%;border-radius:4px;background:var(--muted);transition:width .3s ease}
+.stat.O .sbar i{background:var(--O-ink)} .stat.R .sbar i{background:var(--R-ink)} .stat.V .sbar i{background:var(--V-ink)} .stat.L .sbar i{background:var(--E-ink)}
+
+/* ---------- Íconos de línea ---------- */
+.ico-svg{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em}
+.ico-svg.sm{width:.85em;height:.85em}
+.btn .ico-svg{font-size:1.05rem;margin-right:2px}
+.icon-btn .ico-svg{font-size:1.15rem}
+.opt.R .e{color:var(--R-ink)} .opt.O .e{color:var(--O-ink)} .opt.V .e{color:var(--V-ink)} .opt.I .e{color:var(--I-ink)}
+.opt.E .e{color:var(--E-ink)} .opt.P .e{color:var(--P-ink)} .opt.VL .e{color:var(--VL-ink)}
+.mstats i{display:inline-flex;align-items:center;gap:3px}
+.lock-note .ico-svg,.split-note .ico-svg{margin-right:2px}
 
 /* ---------- Barra ---------- */
 .bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -467,12 +482,13 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
   .nav #yearSel{flex:0 0 84px}
   .tools-desk{display:none}
   .tools-mob{display:flex!important}
-  .summary{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:16px;margin-bottom:14px;scrollbar-width:none}
-  .summary::-webkit-scrollbar{display:none}
-  .stat{flex:0 0 46%;scroll-snap-align:start;padding:12px}
-  .stat:nth-child(n){border-top:0;border-left:1px solid var(--line)}
-  .stat:first-child{border-left:0}
-  .stat .ico{width:36px;height:36px;font-size:1rem}
+  .summary{display:grid;grid-template-columns:1fr 1fr;border-radius:16px;margin-bottom:14px}
+  .stat{padding:12px}
+  .stat:nth-child(n){border-left:0;border-top:0}
+  .stat:nth-child(even){border-left:1px solid var(--line)}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  .stat:last-child{grid-column:1 / -1;border-left:0}
+  .stat .ico{width:36px;height:36px;font-size:1.1rem}
   .stat b{font-size:1.2rem}
   .bar{gap:10px}
   .bar-left{width:100%}
