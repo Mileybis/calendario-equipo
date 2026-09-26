@@ -13,7 +13,7 @@ Aplicación web para planificar los días de **oficina** y **trabajo remoto** de
 | **Acceso** | Inicio de sesión con **Google**, o con usuario/correo + contraseña. Registro propio y recuperación de contraseña por correo. |
 | **Mi calendario** | Vista personal de la semana y del mes, resumen de días y próximo día presencial. |
 | **Equipo** | Vista **Semana** (personas × días) y vista **Mes** (resumen diario con detalle al tocar un día). |
-| **Edición** | Estados: 🏠 Remoto, 🏢 Oficina, 🌴 Vacaciones, 🩺 Incapacidad, con nota opcional. Los cambios se preparan y se **suben** juntos. |
+| **Edición** | Estados: 🏠 Remoto, 🏢 Oficina, 🌴 Vacaciones, 🩺 Incapacidad, 🎉 Evento, 🕒 Permiso, 🤝 Voluntariado, con nota opcional. Los cambios se preparan y se **suben** juntos. |
 | **Reglas** | Martes presencial obligatorio · máximo 2 días remotos por semana · solo se edita desde la semana actual en adelante. |
 | **Calendario corporativo** | Feriados de Panamá, quincenas y año fiscal (octubre–septiembre), de 2026 a 2030. |
 | **Actualizaciones** | Historial en vivo de quién cambió qué y cuándo. |
@@ -56,7 +56,8 @@ calendario-equipo/
 │       ├── 002_registro_y_permisos.sql
 │       ├── 003_quitar_personas.sql
 │       ├── 004_sin_aprobacion.sql
-│       └── 005_login_google.sql
+│       ├── 005_login_google.sql
+│       └── 006_tipos_evento_permiso_voluntariado.sql
 ├── imagenes/                  # Imágenes
 │   ├── favicon.svg            # Ícono de la pestaña
 │   └── robot.webp             # Mascota del equipo (pantalla de acceso)

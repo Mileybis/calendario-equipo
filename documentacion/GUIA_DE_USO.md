@@ -18,7 +18,7 @@ Manual rápido para usar la aplicación de control de días de **oficina**, **tr
 
 | Regla | Detalle |
 |---|---|
-| 🔒 **Martes presencial** | Siempre Oficina. Solo se puede marcar Vacaciones o Incapacidad. |
+| 🔒 **Martes presencial** | Siempre Oficina. Se puede marcar cualquier ausencia (Vacaciones, Incapacidad, Evento, Permiso, Voluntariado), pero no Remoto. |
 | 🏠 **Máximo 2 días remotos** por semana | En semanas con feriado, el cupo baja. Ir más días a la oficina siempre está permitido. |
 | 📅 **Desde esta semana en adelante** | No se pueden cambiar semanas pasadas. |
 
@@ -28,7 +28,7 @@ Manual rápido para usar la aplicación de control de días de **oficina**, **tr
 
 Al entrar ves **tu semana**: cada día con su estado, un resumen y tu **próximo día presencial**. A la derecha, tu **mes completo**.
 
-**Estados:** 🏠 Remoto · 🏢 Oficina · 🌴 Vacaciones · 🩺 Incapacidad · ＋ Sin definir
+**Estados:** 🏠 Remoto · 🏢 Oficina · 🌴 Vacaciones · 🩺 Incapacidad · 🎉 Evento · 🕒 Permiso · 🤝 Voluntariado · ＋ Sin definir
 
 ---
 

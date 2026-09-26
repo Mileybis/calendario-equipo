@@ -3,7 +3,7 @@
 --  Control de días de oficina, trabajo remoto y eventos del equipo
 --
 --  Uso: Supabase → SQL Editor → New query → pegar todo → Run
---  Equivale a aplicar las migraciones 001 a 005 en orden, sin datos de prueba.
+--  Equivale a aplicar las migraciones 001 a 006 en orden, sin datos de prueba.
 --  Después de registrarte en la app, ejecuta el paso final (al pie) para
 --  convertirte en administrador.
 -- =====================================================================
@@ -32,7 +32,8 @@ create unique index if not exists people_username_key on public.people (lower(us
 create table if not exists public.schedule (
   person_id   text not null references public.people(id) on delete cascade,
   day         date not null,
-  status      text not null check (status in ('R','O','V','I')),  -- Remoto, Oficina, Vacaciones, Incapacidad
+  status      text not null constraint schedule_status_check
+              check (status in ('R','O','V','I','E','P','VL')),  -- Remoto, Oficina, Vacaciones, Incapacidad, Evento, Permiso, Voluntariado
   note        text not null default '' check (char_length(note) <= 80),
   updated_by  text references public.people(id) on delete set null,
   updated_at  timestamptz not null default now(),
