@@ -38,28 +38,29 @@ Aplicación web para planificar los días de **oficina** y **trabajo remoto** de
 
 ## 📁 Estructura del proyecto
 
+Cada carpeta guarda **un solo tipo de código**. `index.html` se queda afuera porque GitHub Pages lo necesita en la raíz.
+
 ```
-hybrid-work-planner/
-├── index.html                 # Página principal (estructura HTML)
-├── assets/
-│   ├── css/
-│   │   └── styles.css         # Estilos, temas claro/oscuro y responsive
-│   ├── js/
-│   │   ├── config.js          # ⚙️ Conexión a Supabase y reglas del equipo
-│   │   ├── data.js            # Feriados y quincenas (2026–2030)
-│   │   └── app.js             # Lógica de la aplicación
-│   └── img/
-│       ├── favicon.svg        # Ícono de la pestaña
-│       └── robot.webp         # Mascota del equipo (pantalla de acceso)
-├── database/
+calendario-equipo/
+├── index.html                 # HTML: página principal (debe quedarse en la raíz)
+├── css/                       # CSS: diseño
+│   └── styles.css             # Colores, modo claro/oscuro y responsive
+├── javascript/                # JavaScript: lógica
+│   ├── config.js              # ⚙️ Conexión a Supabase y reglas del equipo
+│   ├── data.js                # Feriados y quincenas (2026–2030)
+│   └── app.js                 # Lógica de la aplicación
+├── sql/                       # SQL: base de datos
 │   ├── schema.sql             # Esquema completo para instalar desde cero
-│   └── migrations/            # Historial de cambios aplicados a la base
+│   └── migraciones/           # Historial de cambios aplicados a la base
 │       ├── 001_esquema_inicial.sql
 │       ├── 002_registro_y_permisos.sql
 │       ├── 003_quitar_personas.sql
 │       ├── 004_sin_aprobacion.sql
 │       └── 005_login_google.sql
-└── docs/
+├── imagenes/                  # Imágenes
+│   ├── favicon.svg            # Ícono de la pestaña
+│   └── robot.webp             # Mascota del equipo (pantalla de acceso)
+└── documentacion/             # Documentación
     ├── ARQUITECTURA.md        # Cómo está construida (diagramas, datos, seguridad)
     ├── DESPLIEGUE.md          # Cómo instalarla y publicarla paso a paso
     ├── GUIA_DE_USO.md         # Manual para el equipo
@@ -72,9 +73,9 @@ hybrid-work-planner/
 
 **Probar en tu computadora:** abre `index.html` en el navegador. Si no hay conexión a Supabase, arranca en **modo de prueba** con datos de ejemplo.
 
-**Publicar:** sigue [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md). En resumen:
-1. Crear proyecto en Supabase y ejecutar `database/schema.sql`.
-2. Poner URL y clave pública en `assets/js/config.js`.
+**Publicar:** sigue [`documentacion/DESPLIEGUE.md`](documentacion/DESPLIEGUE.md). En resumen:
+1. Crear proyecto en Supabase y ejecutar `sql/schema.sql`.
+2. Poner URL y clave pública en `javascript/config.js`.
 3. (Opcional) Configurar Google OAuth.
 4. Subir la carpeta a un repositorio de GitHub y activar **GitHub Pages**.
 
@@ -82,7 +83,7 @@ hybrid-work-planner/
 
 ## ⚙️ Configuración
 
-Todo lo configurable está en **`assets/js/config.js`**:
+Todo lo configurable está en **`javascript/config.js`**:
 
 | Constante | Valor actual | Qué controla |
 |---|---|---|
@@ -106,8 +107,8 @@ Todo lo configurable está en **`assets/js/config.js`**:
 
 | Documento | Para quién |
 |---|---|
-| [Guía de uso](docs/GUIA_DE_USO.md) | Todo el equipo |
-| [Despliegue](docs/DESPLIEGUE.md) | Quien instale o mantenga la app |
-| [Arquitectura](docs/ARQUITECTURA.md) | Perfil técnico |
-| [Decisiones (ADR)](docs/adr/) | Perfil técnico |
+| [Guía de uso](documentacion/GUIA_DE_USO.md) | Todo el equipo |
+| [Despliegue](documentacion/DESPLIEGUE.md) | Quien instale o mantenga la app |
+| [Arquitectura](documentacion/ARQUITECTURA.md) | Perfil técnico |
+| [Decisiones (ADR)](documentacion/adr/) | Perfil técnico |
 

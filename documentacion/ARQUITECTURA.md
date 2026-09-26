@@ -48,10 +48,10 @@ flowchart LR
 | Archivo | Contenido |
 |---|---|
 | `index.html` | Estructura: login, encabezado, vistas, diálogos |
-| `assets/css/styles.css` | Tokens de color (claro/oscuro), componentes y reglas responsive |
-| `assets/js/config.js` | Conexión a Supabase y parámetros de reglas |
-| `assets/js/data.js` | Feriados y quincenas (fuente: `calendario1.xlsx`) |
-| `assets/js/app.js` | Estado, reglas, renderizado, editor, perfil, administración, conexión |
+| `css/styles.css` | Tokens de color (claro/oscuro), componentes y reglas responsive |
+| `javascript/config.js` | Conexión a Supabase y parámetros de reglas |
+| `javascript/data.js` | Feriados y quincenas (fuente: `calendario1.xlsx`) |
+| `javascript/app.js` | Estado, reglas, renderizado, editor, perfil, administración, conexión |
 
 **Secciones de `app.js`:** Utilidades → Estado → Semanas → Reglas → UI helpers → Render → Editor de día → Subir cambios → Perfil → Administrar equipo → Eventos → Tema → Conexión (Supabase) → Inicio.
 
