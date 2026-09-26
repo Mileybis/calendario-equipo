@@ -284,19 +284,40 @@ function renderControls(){
   document.getElementById('tabMine').setAttribute('aria-selected', state.view === 'mine');
 }
 
+const isMonthView = () => state.view === 'team' && state.teamMode === 'month';
+const statHTML = (cls, icon, value, label, pct) =>
+  `<div class="stat ${cls}"><span class="ico">${ic(icon)}</span><div><b>${value}</b><small>${label}</small><span class="sbar"><i style="width:${Math.round(pct)}%"></i></span></div></div>`;
+
 function renderSummary(){
+  const el = document.getElementById('summary'), n = state.people.length;
+  if (isMonthView()){
+    // Total del mes: días de todo el equipo en cada estado
+    const last = new Date(state.year, state.month + 1, 0).getDate();
+    const work = [];
+    for (let i = 1; i <= last; i++){ const d = new Date(state.year, state.month, i); if (isWorkday(d)) work.push(d); }
+    const c = emptyCounts();
+    work.forEach(d => state.people.forEach(p => { c[entry(p.id, d).s]++; }));
+    const total = work.length * n || 1, aus = ausentes(c);
+    el.innerHTML =
+      statHTML('O', 'building', c.O, 'Días en oficina', c.O / total * 100) +
+      statHTML('R', 'home', c.R, 'Días en remoto', c.R / total * 100) +
+      statHTML('V', 'door-exit', aus, 'Días de ausencia', aus / total * 100) +
+      statHTML('N', 'help-circle', c.N, 'Días sin definir', c.N / total * 100) +
+      statHTML('L', 'calendar-week', work.length, `Días laborables · ${MESES[state.month]}`, 100);
+    return;
+  }
+  // Semana: foto de hoy
   const t = hoyReal(), off = !isWorkday(t), c = off ? null : countsFor(t);
-  const v = x => off ? '—' : x;
-  const lbl = s => off ? (holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable') : s;
-  const wi = weekInfo(state.weekStart), n = state.people.length;
-  const de = s => off ? lbl(s) : `${s} · de ${n}`;
-  const bar = x => `<span class="sbar"><i style="width:${off || !n ? 0 : Math.round(x / n * 100)}%"></i></span>`;
-  document.getElementById('summary').innerHTML = `
-    <div class="stat O"><span class="ico">${ic('building')}</span><div><b>${v(c?.O)}</b><small>${de('En oficina')}</small>${bar(c?.O)}</div></div>
-    <div class="stat R"><span class="ico">${ic('home')}</span><div><b>${v(c?.R)}</b><small>${de('En remoto')}</small>${bar(c?.R)}</div></div>
-    <div class="stat V"><span class="ico">${ic('door-exit')}</span><div><b>${v(c ? ausentes(c) : 0)}</b><small>${de('Ausentes')}</small>${bar(c ? ausentes(c) : 0)}</div></div>
-    <div class="stat N"><span class="ico">${ic('help-circle')}</span><div><b>${v(c?.N)}</b><small>${off ? lbl('') : 'Sin definir'}</small>${bar(c?.N)}</div></div>
-    <div class="stat L"><span class="ico">${ic('calendar-week')}</span><div><b>${wi.work}</b><small>Días laborables</small><span class="sbar"><i style="width:${wi.work * 20}%"></i></span></div></div>`;
+  const offMsg = holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable';
+  const val = x => off ? '—' : x, pct = x => off || !n ? 0 : x / n * 100;
+  const lbl = s => off ? offMsg : `${s} hoy · de ${n}`;
+  const wi = weekInfo(state.weekStart);
+  el.innerHTML =
+    statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O)) +
+    statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R)) +
+    statHTML('V', 'door-exit', val(c ? ausentes(c) : 0), lbl('Ausentes'), pct(c ? ausentes(c) : 0)) +
+    statHTML('N', 'help-circle', val(c?.N), off ? offMsg : 'Sin definir hoy', pct(c?.N)) +
+    statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20);
 }
 
 function weekNav(fw, sub){
@@ -453,6 +474,10 @@ function renderMine(){
 }
 
 function renderThisWeek(){
+  // En la vista Mes no se muestra: el calendario del mes ya da esa información
+  const box = document.getElementById('thisWeek');
+  box.hidden = isMonthView();
+  if (box.hidden) return;
   const fw = focusWeek(), t = hoyReal(), n = state.people.length || 1;
   // Inicial de cada persona con el color de su avatar
   const inicial = p => {
