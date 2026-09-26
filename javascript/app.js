@@ -27,6 +27,13 @@ const AVATARES = [
   ['#E3EFF5','#2C627C'], ['#F9E6E8','#9A3B4A'], ['#EFE8FA','#5E3E96'], ['#FFF5CC','#7A6200'],
   ['#E0F4F4','#206B6B'], ['#FDE9DF','#9A4A22']
 ];
+// Ilustraciones de imagenes/avatares/<id>.svg; se guardan como 'ilus:<id>'
+const ILUSTRACIONES = [
+  ['panda', 'Panda'], ['tortuga', 'Tortuga'], ['delfin', 'Delfín'], ['foca', 'Foca'], ['gato', 'Gato'],
+  ['zorro', 'Zorro'], ['conejo', 'Conejo'], ['koala', 'Koala'], ['pinguino', 'Pingüino'], ['perrito', 'Perrito']
+];
+const ILUS_IDS = ILUSTRACIONES.map(([id]) => 'ilus:' + id);
+const ilusSrc = icon => `imagenes/avatares/${icon.slice(5)}.svg`;
 const ANIMALES = ['🐼','🦊','🐱','🐶','🐰','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🦉','🐙','🦄','🐢','🐹','🐮','🐷','🐥','🦋','🐝','🐬','🐳','🦥','🦦','🐿️','🦔','🐞','🦩'];
 
 /* ================= UTILIDADES ================= */
@@ -67,7 +74,7 @@ function weekInfo(mon){
 }
 function cleanAvatar(a, i){
   const color = Number.isInteger(a?.color) && a.color >= 0 && a.color < AVATARES.length ? a.color : i % AVATARES.length;
-  const icon = ANIMALES.includes(a?.icon) ? a.icon : '';
+  const icon = ANIMALES.includes(a?.icon) || ILUS_IDS.includes(a?.icon) ? a.icon : '';
   return { color, icon };
 }
 
@@ -196,6 +203,7 @@ function avatar(p, override){
   const i = Math.max(0, state.people.findIndex(x => x.id === p.id));
   const a = cleanAvatar(override || p.avatar, i);
   const [bg, fg] = AVATARES[a.color];
+  if (ILUS_IDS.includes(a.icon)) return `<span class="avatar ilus" aria-hidden="true"><img src="${ilusSrc(a.icon)}" alt=""></span>`;
   return a.icon
     ? `<span class="avatar animal" style="background:${bg}" aria-hidden="true">${a.icon}</span>`
     : `<span class="avatar" style="background:${bg};color:${fg}">${esc(((p.name || '?').trim()[0] || '?').toUpperCase())}</span>`;
@@ -664,12 +672,34 @@ function pickerHTML(a, name){
   return `<div class="av-picker">
     <p class="av-label">Color</p>
     <div class="av-colors">${AVATARES.map(([bg, fg], c) => `<button type="button" class="sw" data-color="${c}" style="background:${bg};border-color:${fg}" aria-pressed="${a.color === c}" aria-label="Color ${c + 1}"></button>`).join('')}</div>
+    <p class="av-label">Ilustraciones</p>
+    <div class="av-carousel">
+      <button type="button" class="car-nav prev" aria-label="Ver anteriores">‹</button>
+      <div class="av-ilus">${ILUSTRACIONES.map(([id, label]) => `<button type="button" class="il" data-icon="ilus:${id}" aria-pressed="${a.icon === 'ilus:' + id}" title="${label}" aria-label="${label}"><img src="${ilusSrc('ilus:' + id)}" alt="" loading="lazy"></button>`).join('')}</div>
+      <button type="button" class="car-nav next" aria-label="Ver más">›</button>
+    </div>
     <p class="av-label">Ícono</p>
     <div class="av-icons">
       <button type="button" class="ic letter" data-icon="" aria-pressed="${!a.icon}" title="Usar la inicial">${esc(((name || '?').trim()[0] || '?').toUpperCase())}</button>
       ${ANIMALES.map(an => `<button type="button" class="ic" data-icon="${an}" aria-pressed="${a.icon === an}">${an}</button>`).join('')}
     </div>
   </div>`;
+}
+// Flechas del carrusel y deja visible la ilustración elegida
+function bindCarousel(root){
+  const track = root.querySelector('.av-ilus');
+  if (!track) return;
+  const prev = root.querySelector('.car-nav.prev'), next = root.querySelector('.car-nav.next');
+  const sel = track.querySelector('[aria-pressed="true"]');
+  if (sel) track.scrollTo({ left: sel.offsetLeft - (track.clientWidth - sel.offsetWidth) / 2, behavior: 'instant' });
+  const update = () => {
+    prev.disabled = track.scrollLeft <= 8;
+    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+  };
+  prev.onclick = () => track.scrollBy({ left: -track.clientWidth * 0.8, behavior: 'smooth' });
+  next.onclick = () => track.scrollBy({ left: track.clientWidth * 0.8, behavior: 'smooth' });
+  track.onscroll = update;
+  update();
 }
 
 /* ================= PERFIL ================= */
@@ -694,6 +724,7 @@ function paintProfile(){
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
+  bindCarousel(body);
   body.querySelector('#profSave').onclick = async () => {
     keep();
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
@@ -797,6 +828,7 @@ function paintAdmin(){
   });
   box.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { admDraft[admOpen].avatar.color = +b.dataset.color; paintAdmin(); });
   box.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { admDraft[admOpen].avatar.icon = b.dataset.icon; paintAdmin(); });
+  bindCarousel(box);
 }
 document.querySelectorAll('.js-settings').forEach(b => b.onclick = () => {
   if (!state.isAdmin) return;
@@ -1096,7 +1128,8 @@ async function startLive(session){
 let recovering = /type=recovery/.test(location.hash + location.search);
 async function connect(){
   const configured = SUPABASE_URL && SUPABASE_KEY && window.supabase;
-  if (!configured){ goLocal(); return; }
+  // ?demo en la dirección abre el modo de prueba sin tocar la base de datos
+  if (!configured || new URLSearchParams(location.search).has('demo')){ goLocal(); return; }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let starting = false;
   sb.auth.onAuthStateChange((evt, s) => {
