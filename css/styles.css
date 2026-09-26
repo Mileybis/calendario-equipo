@@ -100,6 +100,7 @@ button:disabled{cursor:not-allowed}
 .stat b{display:block;font-size:1.4rem;line-height:1.1;font-weight:800}
 .stat small{color:var(--muted);font-size:.8rem;display:block;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat b .of{font-size:.8rem;font-weight:600;color:var(--muted)}
+.stat .short,.sum-cap{display:none}
 .sbar{display:block;height:4px;border-radius:4px;background:var(--surface-2);margin-top:7px;overflow:hidden}
 .sbar i{display:block;height:100%;border-radius:4px;background:var(--muted);transition:width .3s ease}
 .stat.O .sbar i{background:var(--O-ink)} .stat.R .sbar i{background:var(--R-ink)} .stat.V .sbar i{background:var(--V-ink)} .stat.L .sbar i{background:var(--E-ink)}
@@ -498,15 +499,17 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
   .nav #yearSel{flex:0 0 84px}
   .tools-desk{display:none}
   .tools-mob{display:flex!important}
-  .summary{display:grid;grid-template-columns:1fr 1fr;border-radius:16px;margin-bottom:14px}
-  .stat{padding:12px}
-  .stat:nth-child(n){border-left:0;border-top:0}
-  .stat:nth-child(even){border-left:1px solid var(--line)}
-  .stat:nth-child(n+3){border-top:1px solid var(--line)}
-  .stat:last-child{grid-column:1 / -1;border-left:0}
-  .stat .ico{width:36px;height:36px;font-size:1.1rem}
-  .stat b{font-size:1.2rem}
-  .stat small{white-space:normal}
+  /* Resumen en celular: fichas que se deslizan */
+  .sum-cap{display:block;margin:0 2px 6px;font-size:.78rem;color:var(--muted)}
+  .summary{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:none;border:0;box-shadow:none;border-radius:0;margin:0 -12px 14px;padding:0 12px 2px;scroll-padding-inline:12px}
+  .summary::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto;min-width:86px;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;scroll-snap-align:start}
+  .summary .stat:nth-child(n){border:1px solid var(--line)}
+  .stat > div{display:flex;flex-direction:column;align-items:center}
+  .stat .ico{width:34px;height:34px;font-size:1.05rem}
+  .stat b{font-size:1.3rem;line-height:1}
+  .stat small,.stat .sbar,.stat b .of{display:none}
+  .stat .short{display:block;margin-top:3px;font-size:.74rem;color:var(--muted);white-space:nowrap}
   .bar{gap:10px}
   .bar-left{width:100%}
   .tabs{width:100%}
