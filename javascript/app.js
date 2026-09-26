@@ -8,10 +8,17 @@ const ESTADOS = {
   O: { icon: '🏢', label: 'Oficina' },
   V: { icon: '🌴', label: 'Vacaciones' },
   I: { icon: '🩺', label: 'Incapacidad' },
+  E: { icon: '🎉', label: 'Evento' },
+  P: { icon: '🕒', label: 'Permiso' },
+  VL: { icon: '🤝', label: 'Voluntariado' },
   N: { icon: '＋', label: 'Sin definir' },
   F: { icon: '', label: 'Feriado' }
 };
-const EDITABLES = ['R', 'O', 'V', 'I'];
+const EDITABLES = ['R', 'O', 'V', 'I', 'E', 'P', 'VL'];
+// Días en que la persona no está ni en oficina ni en remoto
+const AUSENCIAS = ['V', 'I', 'E', 'P', 'VL'];
+const emptyCounts = () => Object.fromEntries(Object.keys(ESTADOS).map(k => [k, 0]));
+const ausentes = c => AUSENCIAS.reduce((n, k) => n + c[k], 0);
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DIAS_CORTO = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const DIAS_LARGO = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -152,18 +159,18 @@ function canEdit(pid, d){
 }
 
 function countsFor(d){
-  const c = { O:0, R:0, V:0, I:0, N:0, F:0 };
+  const c = emptyCounts();
   state.people.forEach(p => { c[entry(p.id, d).s]++; });
   return c;
 }
 function weekCheck(pid, mon, override){
-  const c = { O:0, R:0, V:0, I:0, N:0, F:0 };
+  const c = emptyCounts();
   [0,1,2,3,4].forEach(i => {
     const d = addDays(mon, i);
     const s = override && override.date === ymd(d) ? override.s : entry(pid, d).s;
     c[s]++;
   });
-  // Las vacaciones e incapacidades NO reducen los días remotos permitidos.
+  // Las ausencias (vacaciones, incapacidad, evento, permiso, voluntariado) NO reducen los días remotos permitidos.
   // Solo los feriados los reducen (semana de 4 días laborables = 1 remoto).
   const work = 5 - c.F;
   const tO = Math.min(OFICINA_POR_SEMANA, work);
@@ -272,7 +279,7 @@ function renderSummary(){
   document.getElementById('summary').innerHTML = `
     <div class="stat O"><span class="ico">🏢</span><div><b>${v(c?.O)}</b><small>${lbl('en oficina hoy')}</small></div></div>
     <div class="stat R"><span class="ico">🏠</span><div><b>${v(c?.R)}</b><small>${lbl('en remoto hoy')}</small></div></div>
-    <div class="stat V"><span class="ico">🌴</span><div><b>${v(c ? c.V + c.I : 0)}</b><small>${lbl('ausentes hoy')}</small></div></div>
+    <div class="stat V"><span class="ico">🌴</span><div><b>${v(c ? ausentes(c) : 0)}</b><small>${lbl('ausentes hoy')}</small></div></div>
     <div class="stat"><span class="ico">📝</span><div><b>${v(c?.N)}</b><small>${lbl('sin definir hoy')}</small></div></div>
     <div class="stat L"><span class="ico">🗓️</span><div><b>${wi.work}</b><small>días laborables en la semana</small></div></div>`;
 }
@@ -337,21 +344,21 @@ function renderTeamMonth(){
     const h = holidayOf(d);
     const cls = ['mcell', h ? 'hol' : '', sameDay(d, t) ? 'today' : '', sameDay(d, sel) ? 'sel' : ''].join(' ');
     if (h) return `<button type="button" class="${cls}" data-mday="${ymd(d)}" title="${esc('Feriado: ' + h)}"><span class="md">${d.getDate()}</span><span class="mh">Feriado</span></button>`;
-    const c = countsFor(d), aus = c.V + c.I;
+    const c = countsFor(d), aus = ausentes(c);
     const pills = [
       c.O ? `<i class="O" title="En oficina">🏢 ${c.O}</i>` : '',
       c.R ? `<i class="R" title="Remoto">🏠 ${c.R}</i>` : '',
-      aus ? `<i class="V" title="Vacaciones o incapacidad">🌴 ${aus}</i>` : ''
+      aus ? `<i class="V" title="Fuera: vacaciones, incapacidad, evento, permiso o voluntariado">🌴 ${aus}</i>` : ''
     ].join('');
     return `<button type="button" class="${cls}" data-mday="${ymd(d)}">
       <span class="md">${d.getDate()}</span>
       <span class="mstats">${pills || '<em>Sin definir</em>'}</span>
-      <span class="mbar">${['O','R','V','I'].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</span>
+      <span class="mbar">${['O','R',...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</span>
     </button>`;
   };
   document.getElementById('view').innerHTML = `<div class="panel team-month">
     ${teamHead(`${cap(MESES[state.month])} ${state.year}`, 'Toca un día para ver quién va', 'm', state.year === AÑO_INICIO && state.month === 0, state.year === AÑO_FIN && state.month === 11)}
-    <div class="mlegend"><span><i class="O"></i>Oficina</span><span><i class="R"></i>Remoto</span><span><i class="V"></i>Vacaciones / incapacidad</span><span><i class="N"></i>Sin definir</span></div>
+    <div class="mlegend"><span><i class="O"></i>Oficina</span><span><i class="R"></i>Remoto</span><span><i class="V"></i>Vacaciones / otros</span><span><i class="N"></i>Sin definir</span></div>
     <div class="mgrid">
       ${weeks[0].map(d => `<div class="mhead">${DIAS_CORTO[d.getDay()]}${isLockedDay(d) || d.getDay() === DIA_OBLIGATORIO ? ' 🔒' : ''}</div>`).join('')}
       ${weeks.map(w => w.map(cell).join('')).join('')}
@@ -382,7 +389,7 @@ function renderMine(){
   const p = personById(state.me);
   if (!p){ document.getElementById('view').innerHTML = '<div class="panel"><p class="hint">Cargando…</p></div>'; return; }
   const fw = focusWeek(), t = hoyReal();
-  const tally = { O:0, R:0, V:0, I:0, N:0, F:0 };
+  const tally = emptyCounts();
   const rows = fw.days.map(d => {
     const e = entry(p.id, d); tally[e.s]++;
     if (e.s === 'F') return `<li><div class="day-row F"><span><span class="d">${DIAS_CORTO[d.getDay()]} ${d.getDate()}</span><small>${esc(e.note)}</small></span><span>Feriado</span></div></li>`;
@@ -401,7 +408,7 @@ function renderMine(){
     if (isWorkday(d) && entry(p.id, d).s === 'O'){ nextTxt = `${DIAS_LARGO[d.getDay()]} ${d.getDate()}${d.getMonth() !== t.getMonth() ? ' de ' + MESES[d.getMonth()] : ''}`; break; }
   }
   const todayE = isWorkday(t) ? entry(p.id, t) : null;
-  const chips = o => ['O','R','V','I','N'].filter(k => o[k] > 0 || k === 'O' || k === 'R').map(k => `<span class="chip ${k}">${ESTADOS[k].icon} ${ESTADOS[k].label}: ${o[k]}</span>`).join('');
+  const chips = o => ['O','R',...AUSENCIAS,'N'].filter(k => o[k] > 0 || k === 'O' || k === 'R').map(k => `<span class="chip ${k}">${ESTADOS[k].icon} ${ESTADOS[k].label}: ${o[k]}</span>`).join('');
   const weeks = weeksOfMonth(state.year, state.month);
 
   document.getElementById('view').innerHTML = `
@@ -441,13 +448,12 @@ function renderThisWeek(){
         const c = countsFor(d);
         const parts = [`${isLockedDay(d) ? '🔒 ' : ''}🏢 ${plural(c.O, 'persona', 'personas')}`];
         if (c.R) parts.push(`🏠 ${c.R}`);
-        if (c.V) parts.push(`🌴 ${c.V}`);
-        if (c.I) parts.push(`🩺 ${c.I}`);
+        AUSENCIAS.forEach(k => { if (c[k]) parts.push(`${ESTADOS[k].icon} ${c[k]}`); });
         if (c.N) parts.push(`${c.N} sin definir`);
         return `<div class="tw-day ${sameDay(d, t) ? 'is-today' : ''}">
           <h4>${name}${sameDay(d, t) ? ' · hoy' : ''}</h4>
           <p>${parts.join(' · ')}</p>
-          <div class="meter" aria-hidden="true">${['O','R','V','I'].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</div>
+          <div class="meter" aria-hidden="true">${['O','R',...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</div>
         </div>`;
       }).join('')}
     </div>`;
@@ -575,7 +581,7 @@ function openEditor(pid, dateStr){
       <div class="opts" role="group" aria-label="Estado del día" style="margin-top:14px">
         ${EDITABLES.map(k => `<button type="button" class="opt ${k}" data-s="${k}" aria-pressed="${editing.s === k}" ${k === 'R' && rDisabled ? 'disabled' : ''}><span class="e">${ESTADOS[k].icon}</span>${ESTADOS[k].label}</button>`).join('')}
       </div>
-      ${locked ? `<div class="lock-note">🔒 ${MENSAJE_BLOQUEO}. Solo puedes marcar vacaciones o incapacidad.</div>`
+      ${locked ? `<div class="lock-note">🔒 ${MENSAJE_BLOQUEO}. Puedes marcar oficina o cualquier ausencia, pero no remoto.</div>`
         : !remoteOk ? `<div class="lock-note">🏠 Pasaste tus días remotos: esta semana ya tienes ${plural(REMOTO_POR_SEMANA, 'día remoto', 'días remotos')}. Para usar este día, primero pasa otro día a oficina.</div>` : ''}
       <div class="field">
         <label for="noteInput">Nota (opcional)</label>
