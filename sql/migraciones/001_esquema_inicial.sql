@@ -78,9 +78,9 @@ alter publication supabase_realtime add table public.people;
 
 -- 7) EQUIPO INICIAL — CAMBIA LOS CORREOS por los reales antes de correr el script
 insert into public.people (id, name, email, avatar_color, sort) values
-  ('p1', 'Mileybis V.', 'cambiar1@empresa.com', 0, 1),
-  ('p2', 'Stefany B.',  'cambiar2@empresa.com', 1, 2),
-  ('p3', 'Federico D.', 'cambiar3@empresa.com', 2, 3),
-  ('p4', 'Gabriel H.',  'cambiar4@empresa.com', 3, 4),
-  ('p5', 'Ian T.',      'cambiar5@empresa.com', 4, 5)
+  ('p1', 'Persona 1', 'cambiar1@empresa.com', 0, 1),
+  ('p2', 'Persona 2', 'cambiar2@empresa.com', 1, 2),
+  ('p3', 'Persona 3', 'cambiar3@empresa.com', 2, 3),
+  ('p4', 'Persona 4', 'cambiar4@empresa.com', 3, 4),
+  ('p5', 'Persona 5', 'cambiar5@empresa.com', 4, 5)
 on conflict (id) do nothing;

@@ -1,7 +1,7 @@
 # Historial de versiones
 
 ## v1.0.0 · 2026-09
-Primera versión publicada para el equipo Advisory · Tech Enablement.
+Primera versión publicada: control de días de oficina, trabajo remoto y eventos del equipo.
 
 - Vistas **Mi calendario** y **Equipo** (Semana / Mes) con detalle por día.
 - Estados Remoto, Oficina, Vacaciones e Incapacidad, con notas.

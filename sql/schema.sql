@@ -1,6 +1,6 @@
 -- =====================================================================
 --  Hybrid Work Planner — ESQUEMA COMPLETO (instalación desde cero)
---  Advisory · Tech Enablement
+--  Control de días de oficina, trabajo remoto y eventos del equipo
 --
 --  Uso: Supabase → SQL Editor → New query → pegar todo → Run
 --  Equivale a aplicar las migraciones 001 a 005 en orden, sin datos de prueba.

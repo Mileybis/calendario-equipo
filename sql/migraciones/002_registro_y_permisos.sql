@@ -18,10 +18,10 @@ create unique index if not exists people_username_key on public.people (lower(us
 -- Quitar las personas de ejemplo (se registrarán ellas mismas)
 delete from public.people where email like 'cambiar%@empresa.com';
 
--- Tú y Stefany quedan aprobadas; tú eres el administrador
+-- Las personas que quedan se aprueban; la primera es el administrador
 update public.people set approved = true;
-update public.people set username = coalesce(username, 'mileybis'), is_admin = true where id = 'p1';
-update public.people set username = coalesce(username, 'stefany') where id = 'p2';
+update public.people set username = coalesce(username, 'admin'), is_admin = true where id = 'p1';
+update public.people set username = coalesce(username, 'persona2') where id = 'p2';
 
 -- 2) Funciones de ayuda
 create or replace function public.is_member()

@@ -1,6 +1,6 @@
 # Guía de uso — Hybrid Work Planner
 
-Manual rápido para el equipo **Advisory · Tech Enablement**.
+Manual rápido para usar la aplicación de control de días de **oficina**, **trabajo remoto** y **eventos** del equipo.
 
 🔗 https://mileybis.github.io/calendario-equipo/
 

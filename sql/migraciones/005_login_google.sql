@@ -3,7 +3,7 @@
 --  Supabase → SQL Editor → New query → pegar todo → Run
 -- =====================================================================
 --  Con Google no se escribe usuario, así que se crea uno solo con la
---  primera parte del correo (ej. stefanybejarano107@gmail.com → stefanybejarano107).
+--  primera parte del correo (ej. ana.perez@gmail.com → ana.perez).
 
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
