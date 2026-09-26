@@ -1,24 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-  <g clip-path="url(#c)">
-  <circle cx="60" cy="60" r="60" fill="#A3E4C4"/>
-  <g stroke="#34344A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M14 94 Q26 76 46 82 Q32 98 14 94 Z" fill="#6CC46F"/>
-    <path d="M10 74 Q26 64 42 74 Q26 84 10 74 Z" fill="#88D48A"/>
-    <path d="M96 100 Q104 84 118 84 Q112 100 96 100 Z" fill="#6CC46F"/>
-    <circle cx="35" cy="38" r="13" fill="#3D3D52"/>
-    <circle cx="85" cy="38" r="13" fill="#3D3D52"/>
-    <ellipse cx="60" cy="66" rx="36" ry="31" fill="#FFFFFF" stroke-width="3"/>
-  </g>
-  <ellipse cx="45" cy="64" rx="8.5" ry="11.5" transform="rotate(32 45 64)" fill="#3D3D52"/>
-  <ellipse cx="75" cy="64" rx="8.5" ry="11.5" transform="rotate(-32 75 64)" fill="#3D3D52"/>
-  <circle cx="46.5" cy="63" r="3.4" fill="#FFFFFF"/>
-  <circle cx="73.5" cy="63" r="3.4" fill="#FFFFFF"/>
-  <circle cx="47.3" cy="63.6" r="1.7" fill="#34344A"/>
-  <circle cx="74.3" cy="63.6" r="1.7" fill="#34344A"/>
-  <ellipse cx="38" cy="78" rx="5.5" ry="3.2" fill="#FFA3B8"/>
-  <ellipse cx="82" cy="78" rx="5.5" ry="3.2" fill="#FFA3B8"/>
-  <ellipse cx="60" cy="74" rx="4.5" ry="3.2" fill="#34344A"/>
-  <path d="M55 78.5 Q57.5 81.5 60 78.5 Q62.5 81.5 65 78.5" fill="none" stroke="#34344A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#B48CF0"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#D6C2F8"/>
+    <polygon points="37,88 35,97 52,97 53,88" fill="#2F2F3A"/>
+    <polygon points="67,88 68,97 85,97 83,88" fill="#3C3C49"/>
+    <polygon points="38,90 60,90 60,62 42,62" fill="#FFFFFF"/>
+    <polygon points="60,90 82,90 78,62 60,62" fill="#E2E2EC"/>
+    <polygon points="42,64 32,84 46,87 51,69" fill="#2F2F3A"/>
+    <polygon points="78,64 88,84 74,87 69,69" fill="#3C3C49"/>
+    <polygon points="40,40 42,24 54,35" fill="#2F2F3A"/>
+    <polygon points="80,40 78,24 66,35" fill="#3C3C49"/>
+    <polygon points="38,41 60,30 60,67 38,58" fill="#FFFFFF"/>
+    <polygon points="60,30 82,41 82,58 60,67" fill="#E6E6EF"/>
+    <polygon points="44,45 55,47 54,55 45,54" fill="#2F2F3A"/>
+    <polygon points="76,45 65,47 66,55 75,54" fill="#3C3C49"/>
+    <circle cx="50" cy="50" r="1.8" fill="#FFFFFF"/>
+    <circle cx="70" cy="50" r="1.8" fill="#FFFFFF"/>
+    <polygon points="56.5,57 63.5,57 60,61" fill="#2F2F3A"/>
   </g>
 </svg>

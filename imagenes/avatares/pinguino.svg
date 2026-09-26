@@ -1,21 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-  <g clip-path="url(#c)">
-  <circle cx="60" cy="60" r="60" fill="#CBE9FA"/>
-  <g fill="#FFFFFF">
-    <circle cx="18" cy="42" r="2.4"/>
-    <circle cx="100" cy="32" r="2"/>
-    <circle cx="106" cy="56" r="2.6"/>
-    <circle cx="26" cy="24" r="1.6"/>
-  </g>
-  <ellipse cx="60" cy="68" rx="37" ry="35" fill="#3D4B66" stroke="#34344A" stroke-width="3"/>
-  <path d="M60 50 Q48 38 36 50 Q28 62 34 78 Q44 96 60 96 Q76 96 86 78 Q92 62 84 50 Q72 38 60 50 Z" fill="#FFFFFF"/>
-  <ellipse cx="48" cy="65" rx="4" ry="4.8" fill="#34344A"/>
-  <ellipse cx="72" cy="65" rx="4" ry="4.8" fill="#34344A"/>
-  <circle cx="49.4" cy="63.3" r="1.5" fill="#FFFFFF"/>
-  <circle cx="73.4" cy="63.3" r="1.5" fill="#FFFFFF"/>
-  <ellipse cx="40" cy="76" rx="5" ry="3" fill="#FFA3B8"/>
-  <ellipse cx="80" cy="76" rx="5" ry="3" fill="#FFA3B8"/>
-  <path d="M53.5 73 H66.5 L60 81 Z" fill="#FFB347" stroke="#34344A" stroke-width="2" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#F4A596"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#CDD1DA"/>
+    <polygon points="50,92 45,97 57,97" fill="#F5A623"/>
+    <polygon points="70,92 75,97 63,97" fill="#E0941A"/>
+    <polygon points="46,62 37,83 46,81" fill="#262B36"/>
+    <polygon points="74,62 83,83 74,81" fill="#1C2029"/>
+    <polygon points="44,92 52,92 52,58 46,55" fill="#2F3542"/>
+    <polygon points="68,92 76,92 74,55 68,58" fill="#232833"/>
+    <polygon points="46,55 60,36 60,50 52,58" fill="#3A4252"/>
+    <polygon points="60,36 74,55 68,58 60,50" fill="#2C3240"/>
+    <polygon points="52,92 60,92 60,50 52,58" fill="#FFFFFF"/>
+    <polygon points="60,92 68,92 68,58 60,50" fill="#E4E7EE"/>
+    <circle cx="55.5" cy="60" r="2" fill="#1F2430"/>
+    <circle cx="64.5" cy="60" r="2" fill="#1F2430"/>
+    <circle cx="56.1" cy="59.4" r="0.7" fill="#FFFFFF"/>
+    <circle cx="65.1" cy="59.4" r="0.7" fill="#FFFFFF"/>
+    <polygon points="57,64 63,64 60,69" fill="#F5A623"/>
+    <polygon points="60,64 63,64 60,69" fill="#E0941A"/>
   </g>
 </svg>

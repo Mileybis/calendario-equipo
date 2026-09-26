@@ -1,23 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-  <g clip-path="url(#c)">
-  <circle cx="60" cy="60" r="60" fill="#FFE6BE"/>
-  <g stroke="#34344A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M27 58 L29 18 L56 40 Z" fill="#EE8A3C"/>
-    <path d="M93 58 L91 18 L64 40 Z" fill="#EE8A3C"/>
-  </g>
-  <path d="M34 47 L35 29 L48 40 Z" fill="#FFE9D6"/>
-  <path d="M86 47 L85 29 L72 40 Z" fill="#FFE9D6"/>
-  <path d="M24 60 Q26 36 60 36 Q94 36 96 60 Q94 84 60 97 Q26 84 24 60 Z" fill="#EE8A3C"/>
-  <path d="M27 64 Q44 60 60 76 Q76 60 93 64 Q86 86 60 96 Q34 86 27 64 Z" fill="#FFF6EC"/>
-  <path d="M24 60 Q26 36 60 36 Q94 36 96 60 Q94 84 60 97 Q26 84 24 60 Z" fill="none" stroke="#34344A" stroke-width="3" stroke-linejoin="round"/>
-  <ellipse cx="46" cy="59" rx="4" ry="4.8" fill="#34344A"/>
-  <ellipse cx="74" cy="59" rx="4" ry="4.8" fill="#34344A"/>
-  <circle cx="47.4" cy="57.3" r="1.5" fill="#FFFFFF"/>
-  <circle cx="75.4" cy="57.3" r="1.5" fill="#FFFFFF"/>
-  <ellipse cx="38" cy="70" rx="5" ry="3" fill="#FF9EB4"/>
-  <ellipse cx="82" cy="70" rx="5" ry="3" fill="#FF9EB4"/>
-  <ellipse cx="60" cy="81" rx="4.8" ry="3.4" fill="#34344A"/>
-  <path d="M56 86 Q60 89 64 86" fill="none" stroke="#34344A" stroke-width="2.1" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#FFCFC6"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#FFE8E3"/>
+    <polygon points="72,88 98,70 98,86 78,94" fill="#D8621C"/>
+    <polygon points="96,72 106,68 102,82" fill="#FFF6EE"/>
+    <polygon points="44,92 60,92 60,62 50,62" fill="#F07A2E"/>
+    <polygon points="60,92 76,92 70,62 60,62" fill="#D8621C"/>
+    <polygon points="52,64 60,64 60,86" fill="#FFF6EE"/>
+    <polygon points="60,64 68,64 60,86" fill="#F2E3D4"/>
+    <polygon points="37,42 39,22 53,42" fill="#F48A3C"/>
+    <polygon points="41,40 41,29 48,40" fill="#4A2F25"/>
+    <polygon points="83,42 81,22 67,42" fill="#DA6A22"/>
+    <polygon points="79,40 79,29 72,40" fill="#3D261E"/>
+    <polygon points="36,42 60,42 60,72" fill="#F48A3C"/>
+    <polygon points="60,42 84,42 60,72" fill="#DA6A22"/>
+    <polygon points="38,45 55,58 60,72" fill="#FFF4E8"/>
+    <polygon points="82,45 65,58 60,72" fill="#F2E2D2"/>
+    <circle cx="51" cy="50" r="2" fill="#2A1C16"/>
+    <circle cx="69" cy="50" r="2" fill="#2A1C16"/>
+    <circle cx="51.6" cy="49.4" r="0.7" fill="#FFFFFF"/>
+    <circle cx="69.6" cy="49.4" r="0.7" fill="#FFFFFF"/>
+    <polygon points="57.5,68 62.5,68 60,72" fill="#2A1C16"/>
   </g>
 </svg>

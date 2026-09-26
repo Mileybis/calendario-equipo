@@ -29,11 +29,14 @@ const AVATARES = [
 ];
 // Ilustraciones de imagenes/avatares/<id>.svg; se guardan como 'ilus:<id>'
 const ILUSTRACIONES = [
-  ['panda', 'Panda'], ['tortuga', 'Tortuga'], ['delfin', 'Delfín'], ['foca', 'Foca'], ['gato', 'Gato'],
-  ['zorro', 'Zorro'], ['conejo', 'Conejo'], ['koala', 'Koala'], ['pinguino', 'Pingüino'], ['perrito', 'Perrito']
+  ['panda', 'Panda'], ['tortuga', 'Tortuga'], ['nutria', 'Nutria'], ['delfin', 'Delfín'], ['gato', 'Gato'], ['zorro', 'Zorro'],
+  ['conejo', 'Conejo'], ['pinguino', 'Pingüino'], ['perro', 'Perro'], ['koala', 'Koala'], ['buho', 'Búho'], ['elefante', 'Elefante']
 ];
 const ILUS_IDS = ILUSTRACIONES.map(([id]) => 'ilus:' + id);
 const ilusSrc = icon => `imagenes/avatares/${icon.slice(5)}.svg`;
+// Los emojis de antes se muestran con su ilustración equivalente
+const EMOJI_A_ILUS = { '🐼': 'panda', '🐢': 'tortuga', '🦦': 'nutria', '🐬': 'delfin', '🐱': 'gato', '🦊': 'zorro',
+  '🐰': 'conejo', '🐧': 'pinguino', '🐶': 'perro', '🐨': 'koala', '🦉': 'buho' };
 const ANIMALES = ['🐼','🦊','🐱','🐶','🐰','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🦉','🐙','🦄','🐢','🐹','🐮','🐷','🐥','🦋','🐝','🐬','🐳','🦥','🦦','🐿️','🦔','🐞','🦩'];
 
 /* ================= UTILIDADES ================= */
@@ -74,7 +77,8 @@ function weekInfo(mon){
 }
 function cleanAvatar(a, i){
   const color = Number.isInteger(a?.color) && a.color >= 0 && a.color < AVATARES.length ? a.color : i % AVATARES.length;
-  const icon = ANIMALES.includes(a?.icon) || ILUS_IDS.includes(a?.icon) ? a.icon : '';
+  const icon = EMOJI_A_ILUS[a?.icon] ? 'ilus:' + EMOJI_A_ILUS[a.icon]
+    : ANIMALES.includes(a?.icon) || ILUS_IDS.includes(a?.icon) ? a.icon : '';
   return { color, icon };
 }
 
@@ -670,36 +674,14 @@ async function upload(){
 /* ================= AVATAR PICKER ================= */
 function pickerHTML(a, name){
   return `<div class="av-picker">
-    <p class="av-label">Color</p>
+    <p class="av-label">Color de la inicial</p>
     <div class="av-colors">${AVATARES.map(([bg, fg], c) => `<button type="button" class="sw" data-color="${c}" style="background:${bg};border-color:${fg}" aria-pressed="${a.color === c}" aria-label="Color ${c + 1}"></button>`).join('')}</div>
-    <p class="av-label">Ilustraciones</p>
-    <div class="av-carousel">
-      <button type="button" class="car-nav prev" aria-label="Ver anteriores">‹</button>
-      <div class="av-ilus">${ILUSTRACIONES.map(([id, label]) => `<button type="button" class="il" data-icon="ilus:${id}" aria-pressed="${a.icon === 'ilus:' + id}" title="${label}" aria-label="${label}"><img src="${ilusSrc('ilus:' + id)}" alt="" loading="lazy"></button>`).join('')}</div>
-      <button type="button" class="car-nav next" aria-label="Ver más">›</button>
-    </div>
-    <p class="av-label">Ícono</p>
-    <div class="av-icons">
-      <button type="button" class="ic letter" data-icon="" aria-pressed="${!a.icon}" title="Usar la inicial">${esc(((name || '?').trim()[0] || '?').toUpperCase())}</button>
-      ${ANIMALES.map(an => `<button type="button" class="ic" data-icon="${an}" aria-pressed="${a.icon === an}">${an}</button>`).join('')}
+    <p class="av-label">Elige un avatar</p>
+    <div class="av-grid">
+      <button type="button" class="il letter" data-icon="" aria-pressed="${!a.icon}" title="Usar la inicial" aria-label="Usar la inicial" style="background:${AVATARES[a.color][0]};color:${AVATARES[a.color][1]}">${esc(((name || '?').trim()[0] || '?').toUpperCase())}</button>
+      ${ILUSTRACIONES.map(([id, label]) => `<button type="button" class="il" data-icon="ilus:${id}" aria-pressed="${a.icon === 'ilus:' + id}" title="${label}" aria-label="${label}"><img src="${ilusSrc('ilus:' + id)}" alt="" loading="lazy"></button>`).join('')}
     </div>
   </div>`;
-}
-// Flechas del carrusel y deja visible la ilustración elegida
-function bindCarousel(root){
-  const track = root.querySelector('.av-ilus');
-  if (!track) return;
-  const prev = root.querySelector('.car-nav.prev'), next = root.querySelector('.car-nav.next');
-  const sel = track.querySelector('[aria-pressed="true"]');
-  if (sel) track.scrollTo({ left: sel.offsetLeft - (track.clientWidth - sel.offsetWidth) / 2, behavior: 'instant' });
-  const update = () => {
-    prev.disabled = track.scrollLeft <= 8;
-    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-  };
-  prev.onclick = () => track.scrollBy({ left: -track.clientWidth * 0.8, behavior: 'smooth' });
-  next.onclick = () => track.scrollBy({ left: track.clientWidth * 0.8, behavior: 'smooth' });
-  track.onscroll = update;
-  update();
 }
 
 /* ================= PERFIL ================= */
@@ -724,7 +706,6 @@ function paintProfile(){
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
-  bindCarousel(body);
   body.querySelector('#profSave').onclick = async () => {
     keep();
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
@@ -828,7 +809,6 @@ function paintAdmin(){
   });
   box.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { admDraft[admOpen].avatar.color = +b.dataset.color; paintAdmin(); });
   box.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { admDraft[admOpen].avatar.icon = b.dataset.icon; paintAdmin(); });
-  bindCarousel(box);
 }
 document.querySelectorAll('.js-settings').forEach(b => b.onclick = () => {
   if (!state.isAdmin) return;
