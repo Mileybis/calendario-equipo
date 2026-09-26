@@ -1,44 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-  <g clip-path="url(#c)" stroke-linejoin="round" stroke-linecap="round">
-    <rect width="120" height="120" fill="#7EE0B5"/>
-
-    <!-- borde blanco tipo sticker -->
-    <circle cx="54" cy="60" r="34" fill="#FFFFFF"/>
-    <ellipse cx="77" cy="70" rx="27" ry="31" fill="#FFFFFF"/>
-    <path d="M22 88 Q46 110 78 100" fill="none" stroke="#FFFFFF" stroke-width="20"/>
-
-    <!-- cuerpo enroscado -->
-    <ellipse cx="77" cy="70" rx="22" ry="26" fill="#7A7F8C" stroke="#2E2E3A" stroke-width="3"/>
-    <path d="M70 52 Q86 56 90 74" fill="none" stroke="#9499A6" stroke-width="4" opacity=".7"/>
-
-    <!-- bambú -->
-    <path d="M22 88 Q46 110 78 100" fill="none" stroke="#2E2E3A" stroke-width="12"/>
-    <path d="M22 88 Q46 110 78 100" fill="none" stroke="#86D46B" stroke-width="7"/>
-    <path d="M38 99 l3 -5 M56 103 l1 -6" stroke="#2E2E3A" stroke-width="2.2"/>
-    <path d="M26 86 Q14 76 16 64 Q28 70 30 84 Z" fill="#6CC455" stroke="#2E2E3A" stroke-width="2.5"/>
-    <path d="M30 92 Q16 94 10 86 Q22 82 32 90 Z" fill="#86D46B" stroke="#2E2E3A" stroke-width="2.5"/>
-
-    <!-- orejas -->
-    <circle cx="33" cy="37" r="9.5" fill="#4A4E5A" stroke="#2E2E3A" stroke-width="3"/>
-    <circle cx="68" cy="31" r="9.5" fill="#4A4E5A" stroke="#2E2E3A" stroke-width="3"/>
-
-    <!-- cabeza -->
-    <circle cx="54" cy="60" r="28" fill="#FFFFFF" stroke="#2E2E3A" stroke-width="3"/>
-
-    <!-- manchas y ojitos dormidos -->
-    <ellipse cx="42" cy="61" rx="8.5" ry="6.5" transform="rotate(-18 42 61)" fill="#6E7280"/>
-    <ellipse cx="64" cy="58" rx="8.5" ry="6.5" transform="rotate(14 64 58)" fill="#6E7280"/>
-    <path d="M38 62 Q42 65.5 46 62" fill="none" stroke="#2E2E3A" stroke-width="2.4"/>
-    <path d="M60 59 Q64 62.5 68 59" fill="none" stroke="#2E2E3A" stroke-width="2.4"/>
-    <ellipse cx="34" cy="71" rx="4" ry="2.4" fill="#FFB0C4"/>
-    <ellipse cx="71" cy="68" rx="4" ry="2.4" fill="#FFB0C4"/>
-    <path d="M50 70 Q53 67.5 56 70 Q53 73 50 70 Z" fill="#2E2E3A"/>
-
-    <!-- patita sobre el bambú -->
-    <ellipse cx="46" cy="87" rx="8.5" ry="6" fill="#4A4E5A" stroke="#2E2E3A" stroke-width="3"/>
-
-    <!-- zzz -->
-    <path d="M84 30 h7 l-7 8 h7 M95 20 h5 l-5 6 h5" fill="none" stroke="#FFFFFF" stroke-width="2.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#B48CF0"/>
+    <path d="M0 90 H120 V120 H0 Z" fill="#D6C2F8"/>
+    <polygon points="42,92 38,99 52,99 52,93" fill="#22222B"/>
+    <polygon points="78,92 82,99 68,99 68,93" fill="#33333F"/>
+    <polygon points="40,94 60,94 60,62 42,68" fill="#2B2B35"/>
+    <polygon points="60,94 80,94 78,68 60,62" fill="#3A3A47"/>
+    <polygon points="50,92 60,92 60,68 54,72" fill="#FFFFFF"/>
+    <polygon points="60,92 70,92 66,72 60,68" fill="#E4E4EC"/>
+    <polygon points="42,68 31,80 39,87 48,77" fill="#22222B"/>
+    <polygon points="78,68 89,80 81,87 72,77" fill="#33333F"/>
+    <polygon points="33,34 35,26 41,23 47,26 47,33 41,37" fill="#2B2B35"/>
+    <polygon points="87,34 85,26 79,23 73,26 73,33 79,37" fill="#3A3A47"/>
+    <polygon points="34,48 42,34 60,30 60,48" fill="#FFFFFF"/>
+    <polygon points="60,30 78,34 86,48 60,48" fill="#EEEEF5"/>
+    <polygon points="34,48 60,48 60,67 41,61" fill="#F5F5FA"/>
+    <polygon points="86,48 60,48 60,67 79,61" fill="#E2E2EB"/>
+    <polygon points="42,50 49,42 55,46 50,56" fill="#2B2B35"/>
+    <polygon points="78,50 71,42 65,46 70,56" fill="#3A3A47"/>
+    <circle cx="50" cy="48" r="2" fill="#FFFFFF"/>
+    <circle cx="70" cy="48" r="2" fill="#FFFFFF"/>
+    <polygon points="57,55 63,55 60,58.5" fill="#2B2B35"/>
+    <path d="M57.5 60.5 Q58.8 62 60 60.5 Q61.2 62 62.5 60.5" fill="none" stroke="#2B2B35" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
