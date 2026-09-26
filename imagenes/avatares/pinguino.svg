@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#F4A596"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#CDD1DA"/>
+    <polygon points="38,64 25,81 36,83 41,74" fill="#262B36"/>
+    <polygon points="82,64 95,81 84,83 79,74" fill="#1C2029"/>
+    <polygon points="38,90 36,64 44,42 60,34 60,95" fill="#2F3542"/>
+    <polygon points="60,34 76,42 84,64 82,90 60,95" fill="#232833"/>
+    <polygon points="46,90 44,68 48,54 56,50 60,54 60,94" fill="#FFFFFF"/>
+    <polygon points="60,54 64,50 72,54 76,68 74,90 60,94" fill="#E6E8EE"/>
+    <polygon points="48,92 44,98 58,98 58,93" fill="#F5A623"/>
+    <polygon points="72,92 76,98 62,98 62,93" fill="#E0941A"/>
+    <circle cx="53" cy="60" r="2.4" fill="#1F2430"/>
+    <circle cx="67" cy="60" r="2.4" fill="#1F2430"/>
+    <circle cx="53.8" cy="59.2" r="0.8" fill="#FFFFFF"/>
+    <circle cx="67.8" cy="59.2" r="0.8" fill="#FFFFFF"/>
+    <ellipse cx="49" cy="67" rx="2.8" ry="1.6" fill="#F6B6C8"/>
+    <ellipse cx="71" cy="67" rx="2.8" ry="1.6" fill="#EFAABD"/>
+    <polygon points="56,65 64,65 60,71" fill="#F5A623"/>
+    <polygon points="60,65 64,65 60,71" fill="#E0941A"/>
+  </g>
+</svg>

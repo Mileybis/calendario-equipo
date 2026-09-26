@@ -27,6 +27,16 @@ const AVATARES = [
   ['#E3EFF5','#2C627C'], ['#F9E6E8','#9A3B4A'], ['#EFE8FA','#5E3E96'], ['#FFF5CC','#7A6200'],
   ['#E0F4F4','#206B6B'], ['#FDE9DF','#9A4A22']
 ];
+// Ilustraciones de imagenes/avatares/<id>.svg; se guardan como 'ilus:<id>'
+const ILUSTRACIONES = [
+  ['panda', 'Panda'], ['tortuga', 'Tortuga'], ['nutria', 'Nutria'], ['delfin', 'Delfín'], ['gato', 'Gato'], ['zorro', 'Zorro'],
+  ['conejo', 'Conejo'], ['pinguino', 'Pingüino'], ['perro', 'Perro'], ['koala', 'Koala'], ['buho', 'Búho'], ['elefante', 'Elefante']
+];
+const ILUS_IDS = ILUSTRACIONES.map(([id]) => 'ilus:' + id);
+const ilusSrc = icon => `imagenes/avatares/${icon.slice(5)}.svg`;
+// Los emojis de antes se muestran con su ilustración equivalente
+const EMOJI_A_ILUS = { '🐼': 'panda', '🐢': 'tortuga', '🦦': 'nutria', '🐬': 'delfin', '🐱': 'gato', '🦊': 'zorro',
+  '🐰': 'conejo', '🐧': 'pinguino', '🐶': 'perro', '🐨': 'koala', '🦉': 'buho' };
 const ANIMALES = ['🐼','🦊','🐱','🐶','🐰','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🦉','🐙','🦄','🐢','🐹','🐮','🐷','🐥','🦋','🐝','🐬','🐳','🦥','🦦','🐿️','🦔','🐞','🦩'];
 
 /* ================= UTILIDADES ================= */
@@ -67,7 +77,8 @@ function weekInfo(mon){
 }
 function cleanAvatar(a, i){
   const color = Number.isInteger(a?.color) && a.color >= 0 && a.color < AVATARES.length ? a.color : i % AVATARES.length;
-  const icon = ANIMALES.includes(a?.icon) ? a.icon : '';
+  const icon = EMOJI_A_ILUS[a?.icon] ? 'ilus:' + EMOJI_A_ILUS[a.icon]
+    : ANIMALES.includes(a?.icon) || ILUS_IDS.includes(a?.icon) ? a.icon : '';
   return { color, icon };
 }
 
@@ -196,6 +207,7 @@ function avatar(p, override){
   const i = Math.max(0, state.people.findIndex(x => x.id === p.id));
   const a = cleanAvatar(override || p.avatar, i);
   const [bg, fg] = AVATARES[a.color];
+  if (ILUS_IDS.includes(a.icon)) return `<span class="avatar ilus" aria-hidden="true"><img src="${ilusSrc(a.icon)}" alt=""></span>`;
   return a.icon
     ? `<span class="avatar animal" style="background:${bg}" aria-hidden="true">${a.icon}</span>`
     : `<span class="avatar" style="background:${bg};color:${fg}">${esc(((p.name || '?').trim()[0] || '?').toUpperCase())}</span>`;
@@ -662,12 +674,12 @@ async function upload(){
 /* ================= AVATAR PICKER ================= */
 function pickerHTML(a, name){
   return `<div class="av-picker">
-    <p class="av-label">Color</p>
+    <p class="av-label">Color de la inicial</p>
     <div class="av-colors">${AVATARES.map(([bg, fg], c) => `<button type="button" class="sw" data-color="${c}" style="background:${bg};border-color:${fg}" aria-pressed="${a.color === c}" aria-label="Color ${c + 1}"></button>`).join('')}</div>
-    <p class="av-label">Ícono</p>
-    <div class="av-icons">
-      <button type="button" class="ic letter" data-icon="" aria-pressed="${!a.icon}" title="Usar la inicial">${esc(((name || '?').trim()[0] || '?').toUpperCase())}</button>
-      ${ANIMALES.map(an => `<button type="button" class="ic" data-icon="${an}" aria-pressed="${a.icon === an}">${an}</button>`).join('')}
+    <p class="av-label">Elige un avatar</p>
+    <div class="av-grid">
+      <button type="button" class="il letter" data-icon="" aria-pressed="${!a.icon}" title="Usar la inicial" aria-label="Usar la inicial" style="background:${AVATARES[a.color][0]};color:${AVATARES[a.color][1]}">${esc(((name || '?').trim()[0] || '?').toUpperCase())}</button>
+      ${ILUSTRACIONES.map(([id, label]) => `<button type="button" class="il" data-icon="ilus:${id}" aria-pressed="${a.icon === 'ilus:' + id}" title="${label}" aria-label="${label}"><img src="${ilusSrc('ilus:' + id)}" alt="" loading="lazy"></button>`).join('')}
     </div>
   </div>`;
 }
@@ -1096,7 +1108,8 @@ async function startLive(session){
 let recovering = /type=recovery/.test(location.hash + location.search);
 async function connect(){
   const configured = SUPABASE_URL && SUPABASE_KEY && window.supabase;
-  if (!configured){ goLocal(); return; }
+  // ?demo en la dirección abre el modo de prueba sin tocar la base de datos
+  if (!configured || new URLSearchParams(location.search).has('demo')){ goLocal(); return; }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let starting = false;
   sb.auth.onAuthStateChange((evt, s) => {

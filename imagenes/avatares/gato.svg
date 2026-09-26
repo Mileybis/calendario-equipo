@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#F5B09B"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#FAD6CB"/>
+    <polygon points="76,86 98,72 100,80 80,92" fill="#D5843C"/>
+    <polygon points="42,92 60,92 60,60 48,60" fill="#F0A45A"/>
+    <polygon points="60,92 78,92 72,60 60,60" fill="#D98840"/>
+    <polygon points="54,90 60,90 60,66 56,66" fill="#FCE6CB"/>
+    <polygon points="60,90 66,90 64,66 60,66" fill="#F1D6B6"/>
+    <polygon points="39,43 39,23 55,38" fill="#F4AE66"/>
+    <polygon points="42,39 42,29 51,37" fill="#F6BFAE"/>
+    <polygon points="81,43 81,23 65,38" fill="#DE8F47"/>
+    <polygon points="78,39 78,29 69,37" fill="#EDAE9C"/>
+    <polygon points="38,43 60,36 60,67 42,59" fill="#F4AE66"/>
+    <polygon points="60,36 82,43 78,59 60,67" fill="#DE8F47"/>
+    <polygon points="52,58 60,56 60,66 56,64" fill="#FCE6CB"/>
+    <polygon points="60,56 68,58 64,64 60,66" fill="#F1D6B6"/>
+    <ellipse cx="51" cy="50" rx="2.1" ry="2.7" fill="#3A2A20"/>
+    <ellipse cx="69" cy="50" rx="2.1" ry="2.7" fill="#3A2A20"/>
+    <circle cx="51.6" cy="49.2" r="0.7" fill="#FFFFFF"/>
+    <circle cx="69.6" cy="49.2" r="0.7" fill="#FFFFFF"/>
+    <polygon points="57.5,56 62.5,56 60,59" fill="#E07A8A"/>
+    <path d="M44 58 H34 M44 61 L35 63 M76 58 H86 M76 61 L85 63" stroke="#8A5A3A" stroke-width="1" stroke-linecap="round" opacity=".7"/>
+  </g>
+</svg>
