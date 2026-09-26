@@ -285,12 +285,17 @@ function renderControls(){
 }
 
 const isMonthView = () => state.view === 'team' && state.teamMode === 'month';
-const statHTML = (cls, icon, value, label, pct) =>
-  `<div class="stat ${cls}"><span class="ico">${ic(icon)}</span><div><b>${value}</b><small>${label}</small><span class="sbar"><i style="width:${Math.round(pct)}%"></i></span></div></div>`;
+// short = etiqueta de una palabra para las fichas del celular
+const statHTML = (cls, icon, value, label, pct, short) =>
+  `<div class="stat ${cls}"><span class="ico">${ic(icon)}</span><div><b>${value}</b><small>${label}</small><span class="short">${short}</span><span class="sbar"><i style="width:${Math.round(pct)}%"></i></span></div></div>`;
 
 function renderSummary(){
   const el = document.getElementById('summary'), n = state.people.length;
+  // Texto sobre las fichas (solo se ve en celular)
+  let cap = document.getElementById('sumCap');
+  if (!cap){ cap = document.createElement('p'); cap.id = 'sumCap'; cap.className = 'sum-cap'; el.before(cap); }
   if (isMonthView()){
+    cap.textContent = `Total de ${MESES[state.month]}`;
     // Total del mes: días de todo el equipo en cada estado
     const last = new Date(state.year, state.month + 1, 0).getDate();
     const work = [];
@@ -299,11 +304,11 @@ function renderSummary(){
     work.forEach(d => state.people.forEach(p => { c[entry(p.id, d).s]++; }));
     const total = work.length * n || 1, aus = ausentes(c);
     el.innerHTML =
-      statHTML('O', 'building', c.O, 'Días en oficina', c.O / total * 100) +
-      statHTML('R', 'home', c.R, 'Días en remoto', c.R / total * 100) +
-      statHTML('V', 'door-exit', aus, 'Días de ausencia', aus / total * 100) +
-      statHTML('N', 'help-circle', c.N, 'Días sin definir', c.N / total * 100) +
-      statHTML('L', 'calendar-week', work.length, `Días laborables · ${MESES[state.month]}`, 100);
+      statHTML('O', 'building', c.O, 'Días en oficina', c.O / total * 100, 'Oficina') +
+      statHTML('R', 'home', c.R, 'Días en remoto', c.R / total * 100, 'Remoto') +
+      statHTML('V', 'door-exit', aus, 'Días de ausencia', aus / total * 100, 'Ausencias') +
+      statHTML('N', 'help-circle', c.N, 'Días sin definir', c.N / total * 100, 'Sin definir') +
+      statHTML('L', 'calendar-week', work.length, `Días laborables · ${MESES[state.month]}`, 100, 'Laborables');
     return;
   }
   // Semana: foto de hoy
@@ -313,12 +318,13 @@ function renderSummary(){
   const val = x => off ? '—' : `${x}<span class="of"> de ${n}</span>`;
   const lbl = s => off ? offMsg : `${s} hoy`;
   const wi = weekInfo(state.weekStart);
+  cap.textContent = off ? offMsg : 'Hoy';
   el.innerHTML =
-    statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O)) +
-    statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R)) +
-    statHTML('V', 'door-exit', val(c ? ausentes(c) : 0), lbl('Ausentes'), pct(c ? ausentes(c) : 0)) +
-    statHTML('N', 'help-circle', val(c?.N), lbl('Sin definir'), pct(c?.N)) +
-    statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20);
+    statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O), 'Oficina') +
+    statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R), 'Remoto') +
+    statHTML('V', 'door-exit', val(c ? ausentes(c) : 0), lbl('Ausentes'), pct(c ? ausentes(c) : 0), 'Ausentes') +
+    statHTML('N', 'help-circle', val(c?.N), lbl('Sin definir'), pct(c?.N), 'Sin definir') +
+    statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20, 'Laborables');
 }
 
 function weekNav(fw, sub){
