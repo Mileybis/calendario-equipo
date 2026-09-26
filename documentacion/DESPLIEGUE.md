@@ -14,10 +14,10 @@ Guía para instalar la aplicación desde cero. Todo se hace desde el navegador y
    - Name: `hybrid-work-planner`
    - Database password: *Generate a password* y guárdala.
    - Region: la más cercana (ej. *Americas*).
-4. Cuando esté listo: **SQL Editor → New query** → pega todo `database/schema.sql` → **Run**.
+4. Cuando esté listo: **SQL Editor → New query** → pega todo `sql/schema.sql` → **Run**.
    Debe decir *Success. No rows returned*.
 
-> Las migraciones en `database/migrations/` son el historial de cómo evolucionó la base. **Para una instalación nueva usa solo `schema.sql`.**
+> Las migraciones en `sql/migraciones/` son el historial de cómo evolucionó la base. **Para una instalación nueva usa solo `schema.sql`.**
 
 ---
 
@@ -39,7 +39,7 @@ En Supabase → **Project Settings → API Keys**, copia:
 - **Project URL**
 - **Publishable key** (`sb_publishable_…`). ⚠️ *Nunca* la *secret*.
 
-Pégalos en `assets/js/config.js`:
+Pégalos en `javascript/config.js`:
 
 ```js
 const SUPABASE_URL = 'https://xxxx.supabase.co';
@@ -66,7 +66,7 @@ const SUPABASE_KEY = 'sb_publishable_xxxx';
 ## Paso 5 · Publicar en GitHub Pages
 
 1. En **github.com** → **New repository** → nombre (ej. `calendario-equipo`) → **Public** → *Create*.
-2. **Add file → Upload files** → arrastra **todo el contenido** de esta carpeta (`index.html`, `assets/`, etc.) → **Commit changes**.
+2. **Add file → Upload files** → arrastra **todo el contenido** de esta carpeta (`index.html`, `css/`, `javascript/`, `imagenes/`, etc.) → **Commit changes**.
 3. **Settings → Pages** → *Deploy from a branch* → `main` / `(root)` → **Save**.
 4. En 1–2 minutos: `https://TU-USUARIO.github.io/NOMBRE-REPO/`
 
