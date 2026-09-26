@@ -17,6 +17,7 @@ const ICONOS = {
   'heart-handshake': 'M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572 M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25 M12.5 15.5l2 2 M15 13l2 2',
   'lock': 'M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0 M8 11v-4a4 4 0 1 1 8 0v4',
   'plus': 'M12 5l0 14 M5 12l14 0',
+  'arrow-right': 'M5 12l14 0 M13 18l6 -6 M13 6l6 6',
   'pencil': 'M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4 M13.5 6.5l4 4',
   'moon': 'M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z',
   'sun': 'M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7',
@@ -32,5 +33,5 @@ const ICONOS = {
 };
 
 function ic(name, cls = ''){
-  return `<svg class="ico-svg ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${ICONOS[name] || ''}"/></svg>`;
+  return `<svg class="ico-svg ${cls}" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="${ICONOS[name] || ''}"/></svg>`;
 }

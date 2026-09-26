@@ -89,6 +89,7 @@ const state = {
   view: 'mine', year: 0, month: 0, weekStart: null, mobileDay: -1, teamMode: 'week', teamDay: null,
   editing: false, pending: {}, mode: 'connecting'
 };
+const MAX_ACTIVIDAD = 300;   // cambios recientes que se cargan para Actualizaciones
 const personById = id => state.people.find(p => p.id === id);
 const pendingCount = () => Object.keys(state.pending).length;
 
@@ -228,7 +229,7 @@ function cellBtn(p, d, opts = {}){
     ${pend ? '<span class="dot"></span>' : ''}${locked ? `<span class="lock">${ic('lock')}</span>` : ''}
     ${opts.mini ? `<span class="n">${d.getDate()}</span>` : ''}
     ${icon ? `<span class="e">${icon}</span>` : ''}<span class="t">${label}</span>
-    ${e.note && !opts.mini && !opts.row ? `<span class="note">${ic('note')} ${esc(e.note)}</span>` : ''}
+    ${e.note && !opts.mini && !opts.row ? `<span class="note">${esc(e.note)}</span>` : ''}
   </button>`;
 }
 function dayHead(d){
@@ -483,26 +484,42 @@ function renderThisWeek(){
     </div>`;
 }
 
+// Periodo que se está viendo: el mes en Equipo › Mes; la semana en los demás casos
+function feedRange(){
+  if (state.view === 'team' && state.teamMode === 'month'){
+    return { from: ymd(new Date(state.year, state.month, 1)), to: ymd(new Date(state.year, state.month + 1, 0)),
+      label: `Cambios de ${MESES[state.month]} ${state.year}`, empty: 'Sin cambios este mes.' };
+  }
+  const days = [0,1,2,3,4].map(i => addDays(state.weekStart, i));
+  return { from: ymd(state.weekStart), to: ymd(addDays(state.weekStart, 6)),
+    label: `Cambios del ${weekRange(days)}`, empty: 'Sin cambios esta semana.' };
+}
+const statusPill = e => {
+  const s = e && ESTADOS[e.s] && !['N', 'F'].includes(e.s) ? e.s : 'N';
+  return `<span class="chip sm ${s}">${s === 'N' ? '' : ESTADOS[s].icon}${ESTADOS[s].label}</span>`;
+};
 function renderFeed(){
-  const items = state.activity.slice(0, 40).map(a => {
+  const r = feedRange();
+  const items = state.activity.map(a => {
+    const ch = (a.changes || []).filter(c => c.date >= r.from && c.date <= r.to);
+    if (!ch.length) return '';
     const au = personById(a.author);
-    const ch = a.changes || [];
     const lis = ch.slice(0, 4).map(c => {
       const d = parseYmd(c.date), target = personById(c.pid);
-      const who = c.pid !== a.author && target ? `<b>${esc(target.name)}</b> · ` : '';
-      const from = c.from?.s && ESTADOS[c.from.s] && c.from.s !== 'N' ? ESTADOS[c.from.s].icon : '—';
-      return `<li>${who}${shortDate(d)}: ${from}<span class="arrow">→</span>${statusText(normalize(c.to, d))}${c.to?.note ? `<em>${ic('note')} ${esc(c.to.note)}</em>` : ''}</li>`;
+      const who = c.pid !== a.author && target ? ` · ${esc(target.name)}` : '';
+      return `<li><div class="fi-day">${shortDate(d)}${who}</div>
+        <div class="fi-flow">${statusPill(c.from)}${ic('arrow-right', 'fi-arrow')}${statusPill(normalize(c.to, d))}</div>
+        ${c.to?.note ? `<div class="fi-note">"${esc(c.to.note)}"</div>` : ''}</li>`;
     }).join('');
     return `<li class="fi">${avatar(au)}<div>
-      <div class="fi-top"><b>${esc(au ? au.name : 'Alguien')}</b> subió ${plural(ch.length, 'cambio', 'cambios')}</div>
-      <div class="fi-time">${timeAgo(a.at)}</div>
+      <div class="fi-top"><b>${esc(au ? au.name : 'Alguien')}</b> <span>· ${timeAgo(a.at)}</span></div>
       <ul>${lis}${ch.length > 4 ? `<li class="more">y ${ch.length - 4} más</li>` : ''}</ul>
     </div></li>`;
   }).join('');
   document.getElementById('feed').innerHTML = `
     <h2 class="title">Actualizaciones</h2>
-    <p class="hint">Cambios recientes del equipo${state.mode === 'live' ? ' · en vivo' : ''}</p>
-    <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>Todavía no hay cambios.</li>`}</ul>`;
+    <p class="hint">${r.label}${state.mode === 'live' ? ' · en vivo' : ''}</p>
+    <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>${r.empty}</li>`}</ul>`;
 }
 
 function monthInfo(y, m){
@@ -1066,7 +1083,7 @@ function ensureVisibleRange(){
   if (state.weekStart) loadRange(addDays(state.weekStart, -1), addDays(state.weekStart, 6));
 }
 async function loadActivity(){
-  const { data } = await sb.from('activity').select('*').order('at', { ascending: false }).limit(40);
+  const { data } = await sb.from('activity').select('*').order('at', { ascending: false }).limit(MAX_ACTIVIDAD);
   state.activity = (data || []).map(rowToAct);
 }
 let liveStarting = false;
@@ -1102,7 +1119,7 @@ async function startLive(session){
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity' }, ({ new: n }) => {
       if (!state.activity.some(a => a.id === String(n.id))) state.activity.unshift(rowToAct(n));
-      state.activity = state.activity.slice(0, 40);
+      state.activity = state.activity.slice(0, MAX_ACTIVIDAD);
       renderAll();
     })
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'activity' }, ({ old: o }) => {
