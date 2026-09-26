@@ -499,17 +499,16 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
   .nav #yearSel{flex:0 0 84px}
   .tools-desk{display:none}
   .tools-mob{display:flex!important}
-  /* Resumen en celular: fichas que se deslizan */
+  /* Resumen en celular: 5 fichas iguales a todo el ancho */
   .sum-cap{display:block;margin:0 2px 6px;font-size:.78rem;color:var(--muted)}
-  .summary{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:none;border:0;box-shadow:none;border-radius:0;margin:0 -12px 14px;padding:0 12px 2px;scroll-padding-inline:12px}
-  .summary::-webkit-scrollbar{display:none}
-  .stat{flex:0 0 auto;min-width:86px;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;scroll-snap-align:start}
+  .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;background:none;border:0;box-shadow:none;border-radius:0;margin-bottom:14px}
+  .stat{flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 2px;background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
   .summary .stat:nth-child(n){border:1px solid var(--line)}
-  .stat > div{display:flex;flex-direction:column;align-items:center}
-  .stat .ico{width:34px;height:34px;font-size:1.05rem}
-  .stat b{font-size:1.3rem;line-height:1}
+  .stat > div{display:flex;flex-direction:column;align-items:center;width:100%}
+  .stat .ico{width:32px;height:32px;font-size:1rem}
+  .stat b{font-size:1.25rem;line-height:1}
   .stat small,.stat .sbar,.stat b .of{display:none}
-  .stat .short{display:block;margin-top:3px;font-size:.74rem;color:var(--muted);white-space:nowrap}
+  .stat .short{display:block;margin-top:3px;font-size:.68rem;line-height:1.2;color:var(--muted)}
   .bar{gap:10px}
   .bar-left{width:100%}
   .tabs{width:100%}
@@ -570,3 +569,12 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
 }
 .tools-mob{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Celulares muy pequeños: el resumen se achica para que las palabras quepan */
+@media (max-width:360px){
+  .summary{gap:4px}
+  .stat{padding:9px 1px;border-radius:12px}
+  .stat .ico{width:28px;height:28px;font-size:.92rem}
+  .stat b{font-size:1.1rem}
+  .stat .short{font-size:.58rem}
+}

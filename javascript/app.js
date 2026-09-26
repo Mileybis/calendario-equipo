@@ -295,7 +295,7 @@ function renderSummary(){
   let cap = document.getElementById('sumCap');
   if (!cap){ cap = document.createElement('p'); cap.id = 'sumCap'; cap.className = 'sum-cap'; el.before(cap); }
   if (isMonthView()){
-    cap.textContent = `Total de ${MESES[state.month]} · desliza para ver más`;
+    cap.textContent = `Total de ${MESES[state.month]}`;
     // Total del mes: días de todo el equipo en cada estado
     const last = new Date(state.year, state.month + 1, 0).getDate();
     const work = [];
@@ -318,7 +318,7 @@ function renderSummary(){
   const val = x => off ? '—' : `${x}<span class="of"> de ${n}</span>`;
   const lbl = s => off ? offMsg : `${s} hoy`;
   const wi = weekInfo(state.weekStart);
-  cap.textContent = off ? offMsg : 'Hoy · desliza para ver más';
+  cap.textContent = off ? offMsg : 'Hoy';
   el.innerHTML =
     statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O), 'Oficina') +
     statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R), 'Remoto') +
