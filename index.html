@@ -22,8 +22,8 @@
         <span class="sync" id="sync"><i></i><span>Conectando…</span></span>
       </div>
       <div class="tools tools-mob">
-        <button class="icon-btn js-theme" aria-label="Cambiar tema">🌙</button>
-        <button class="icon-btn js-settings" aria-label="Administrar equipo" hidden>⚙️</button>
+        <button class="icon-btn js-theme" aria-label="Cambiar tema"></button>
+        <button class="icon-btn js-settings" aria-label="Administrar equipo" hidden></button>
         <button class="icon-btn js-me" aria-label="Mi perfil"></button>
       </div>
     </div>
@@ -37,8 +37,8 @@
       </div>
       <div class="tools tools-desk">
         <button class="btn me-btn js-me" title="Mi perfil"></button>
-        <button class="icon-btn js-theme" aria-label="Cambiar tema">🌙</button>
-        <button class="icon-btn js-settings" aria-label="Administrar equipo" title="Administrar equipo" hidden>⚙️</button>
+        <button class="icon-btn js-theme" aria-label="Cambiar tema"></button>
+        <button class="icon-btn js-settings" aria-label="Administrar equipo" title="Administrar equipo" hidden></button>
       </div>
     </div>
   </header>
@@ -52,18 +52,18 @@
         <button class="tab" role="tab" id="tabTeam">Equipo</button>
       </div>
       <div class="actions">
-        <button class="btn" id="editBtn">✏️ Editar</button>
+        <button class="btn" id="editBtn" data-ico="pencil">Editar</button>
       </div>
     </div>
     <div class="legend">
-      <span class="chip R">🏠 Remoto</span>
-      <span class="chip O">🏢 Oficina</span>
-      <span class="chip V">🌴 Vacaciones</span>
-      <span class="chip I">🩺 Incapacidad</span>
-      <span class="chip E">🎉 Evento</span>
-      <span class="chip P">🕒 Permiso</span>
-      <span class="chip VL">🤝 Voluntariado</span>
-      <span class="chip L">🔒 Presencial obligatorio</span>
+      <span class="chip R" data-ico="home">Remoto</span>
+      <span class="chip O" data-ico="building">Oficina</span>
+      <span class="chip V" data-ico="beach">Vacaciones</span>
+      <span class="chip I" data-ico="stethoscope">Incapacidad</span>
+      <span class="chip E" data-ico="confetti">Evento</span>
+      <span class="chip P" data-ico="clock">Permiso</span>
+      <span class="chip VL" data-ico="heart-handshake">Voluntariado</span>
+      <span class="chip L" data-ico="lock">Presencial obligatorio</span>
       <span class="chip F">Feriado</span>
     </div>
   </div>
@@ -180,6 +180,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="javascript/config.js"></script>
+<script src="javascript/iconos.js"></script>
 <script src="javascript/data.js"></script>
 <script src="javascript/app.js"></script>
 </body>

@@ -4,14 +4,14 @@
    ===================================================================== */
 
 const ESTADOS = {
-  R: { icon: '🏠', label: 'Remoto' },
-  O: { icon: '🏢', label: 'Oficina' },
-  V: { icon: '🌴', label: 'Vacaciones' },
-  I: { icon: '🩺', label: 'Incapacidad' },
-  E: { icon: '🎉', label: 'Evento' },
-  P: { icon: '🕒', label: 'Permiso' },
-  VL: { icon: '🤝', label: 'Voluntariado' },
-  N: { icon: '＋', label: 'Sin definir' },
+  R: { icon: ic('home'), label: 'Remoto' },
+  O: { icon: ic('building'), label: 'Oficina' },
+  V: { icon: ic('beach'), label: 'Vacaciones' },
+  I: { icon: ic('stethoscope'), label: 'Incapacidad' },
+  E: { icon: ic('confetti'), label: 'Evento' },
+  P: { icon: ic('clock'), label: 'Permiso' },
+  VL: { icon: ic('heart-handshake'), label: 'Voluntariado' },
+  N: { icon: ic('plus'), label: 'Sin definir' },
   F: { icon: '', label: 'Feriado' }
 };
 const EDITABLES = ['R', 'O', 'V', 'I', 'E', 'P', 'VL'];
@@ -222,20 +222,20 @@ function cellBtn(p, d, opts = {}){
   const locked = isLockedDay(d) && e.s === 'O';
   const pend = isPending(p.id, d);
   const label = e.s === 'N' ? (ce.ok ? 'Definir' : '—') : ESTADOS[e.s].label;
-  const icon = e.s === 'N' ? (ce.ok ? '＋' : '') : ESTADOS[e.s].icon;
+  const icon = e.s === 'N' ? (ce.ok ? ic('plus') : '') : ESTADOS[e.s].icon;
   const title = `${p.name} · ${DIAS_LARGO[d.getDay()]} ${d.getDate()}: ${ESTADOS[e.s].label}${e.note ? ' — ' + e.note : ''}${locked ? ' · ' + MENSAJE_BLOQUEO : ''}`;
   return `<button class="cell ${e.s} ${locked ? 'locked' : ''} ${pend ? 'pending' : ''} ${ce.ok ? '' : 'ro'}" data-pid="${p.id}" data-date="${ymd(d)}" title="${esc(title)}" aria-label="${esc(title)}">
-    ${pend ? '<span class="dot"></span>' : ''}${locked ? '<span class="lock">🔒</span>' : ''}
+    ${pend ? '<span class="dot"></span>' : ''}${locked ? `<span class="lock">${ic('lock')}</span>` : ''}
     ${opts.mini ? `<span class="n">${d.getDate()}</span>` : ''}
     ${icon ? `<span class="e">${icon}</span>` : ''}<span class="t">${label}</span>
-    ${e.note && !opts.mini && !opts.row ? `<span class="note">📝 ${esc(e.note)}</span>` : ''}
+    ${e.note && !opts.mini && !opts.row ? `<span class="note">${ic('note')} ${esc(e.note)}</span>` : ''}
   </button>`;
 }
 function dayHead(d){
   const h = holidayOf(d), lk = isLockedDay(d);
   const cls = [lk ? 'locked-col' : '', h ? 'hol-col' : '', sameDay(d, hoyReal()) ? 'today' : ''].join(' ');
   const title = h ? `Feriado: ${h}` : lk ? MENSAJE_BLOQUEO : '';
-  return `<th class="${cls}" ${title ? `title="${esc(title)}"` : ''}>${DIAS_CORTO[d.getDay()]}${lk ? ' 🔒' : ''}<b>${d.getDate()}</b></th>`;
+  return `<th class="${cls}" ${title ? `title="${esc(title)}"` : ''}>${DIAS_CORTO[d.getDay()]}${lk ? ' ' + ic('lock', 'sm') : ''}<b>${d.getDate()}</b></th>`;
 }
 function personLabel(p){
   const first = esc((p.name || '').trim().split(/\s+/)[0] || p.name);
@@ -267,12 +267,12 @@ function renderControls(){
   document.getElementById('next').disabled = state.year === AÑO_FIN && state.month === 11;
   const me = personById(state.me);
   document.querySelectorAll('.js-me').forEach(b => {
-    b.innerHTML = me ? (b.classList.contains('me-btn') ? `${avatar(me)}<span>${esc(me.name)}</span>` : avatar(me)) : '👤';
+    b.innerHTML = me ? (b.classList.contains('me-btn') ? `${avatar(me)}<span>${esc(me.name)}</span>` : avatar(me)) : ic('user');
   });
   document.querySelectorAll('.js-settings').forEach(b => {
     b.hidden = !state.isAdmin;
     const n = state.pendingPeople.length;
-    b.innerHTML = '⚙️' + (n ? `<span class="badge">${n}</span>` : '');
+    b.innerHTML = ic('settings') + (n ? `<span class="badge">${n}</span>` : '');
   });
   const sync = document.getElementById('sync');
   sync.className = 'sync' + (state.mode === 'live' ? ' live' : '');
@@ -287,13 +287,15 @@ function renderSummary(){
   const t = hoyReal(), off = !isWorkday(t), c = off ? null : countsFor(t);
   const v = x => off ? '—' : x;
   const lbl = s => off ? (holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable') : s;
-  const wi = weekInfo(state.weekStart);
+  const wi = weekInfo(state.weekStart), n = state.people.length;
+  const de = s => off ? lbl(s) : `${s} · de ${n}`;
+  const bar = x => `<span class="sbar"><i style="width:${off || !n ? 0 : Math.round(x / n * 100)}%"></i></span>`;
   document.getElementById('summary').innerHTML = `
-    <div class="stat O"><span class="ico">🏢</span><div><b>${v(c?.O)}</b><small>${lbl('en oficina hoy')}</small></div></div>
-    <div class="stat R"><span class="ico">🏠</span><div><b>${v(c?.R)}</b><small>${lbl('en remoto hoy')}</small></div></div>
-    <div class="stat V"><span class="ico">🌴</span><div><b>${v(c ? ausentes(c) : 0)}</b><small>${lbl('ausentes hoy')}</small></div></div>
-    <div class="stat"><span class="ico">📝</span><div><b>${v(c?.N)}</b><small>${lbl('sin definir hoy')}</small></div></div>
-    <div class="stat L"><span class="ico">🗓️</span><div><b>${wi.work}</b><small>días laborables en la semana</small></div></div>`;
+    <div class="stat O"><span class="ico">${ic('building')}</span><div><b>${v(c?.O)}</b><small>${de('En oficina')}</small>${bar(c?.O)}</div></div>
+    <div class="stat R"><span class="ico">${ic('home')}</span><div><b>${v(c?.R)}</b><small>${de('En remoto')}</small>${bar(c?.R)}</div></div>
+    <div class="stat V"><span class="ico">${ic('door-exit')}</span><div><b>${v(c ? ausentes(c) : 0)}</b><small>${de('Ausentes')}</small>${bar(c ? ausentes(c) : 0)}</div></div>
+    <div class="stat N"><span class="ico">${ic('help-circle')}</span><div><b>${v(c?.N)}</b><small>${off ? lbl('') : 'Sin definir'}</small>${bar(c?.N)}</div></div>
+    <div class="stat L"><span class="ico">${ic('calendar-week')}</span><div><b>${wi.work}</b><small>Días laborables</small><span class="sbar"><i style="width:${wi.work * 20}%"></i></span></div></div>`;
 }
 
 function weekNav(fw, sub){
@@ -324,7 +326,7 @@ function dayPeopleList(d){
   const people = [...state.people].sort((a, b) => (b.id === state.me) - (a.id === state.me));
   return `<ul class="plist">${people.map(p => {
     const e = entry(p.id, d);
-    return `<li class="prow ${p.id === state.me ? 'me' : ''}"><div class="person">${avatar(p)}<span style="min-width:0"><span class="nm">${esc(p.name)}</span>${e.note && e.s !== 'F' ? `<span class="pnote">📝 ${esc(e.note)}</span>` : ''}</span>${p.id === state.me ? '<span class="you">Tú</span>' : ''}</div>${cellBtn(p, d, { row: true })}</li>`;
+    return `<li class="prow ${p.id === state.me ? 'me' : ''}"><div class="person">${avatar(p)}<span style="min-width:0"><span class="nm">${esc(p.name)}</span>${e.note && e.s !== 'F' ? `<span class="pnote">${ic('note')} ${esc(e.note)}</span>` : ''}</span>${p.id === state.me ? '<span class="you">Tú</span>' : ''}</div>${cellBtn(p, d, { row: true })}</li>`;
   }).join('')}</ul>`;
 }
 function renderTeam(){
@@ -358,9 +360,9 @@ function renderTeamMonth(){
     if (h) return `<button type="button" class="${cls}" data-mday="${ymd(d)}" title="${esc('Feriado: ' + h)}"><span class="md">${d.getDate()}</span><span class="mh">Feriado</span></button>`;
     const c = countsFor(d), aus = ausentes(c);
     const pills = [
-      c.O ? `<i class="O" title="En oficina">🏢 ${c.O}</i>` : '',
-      c.R ? `<i class="R" title="Remoto">🏠 ${c.R}</i>` : '',
-      aus ? `<i class="V" title="Fuera: vacaciones, incapacidad, evento, permiso o voluntariado">🌴 ${aus}</i>` : ''
+      c.O ? `<i class="O" title="En oficina">${ic('building')} ${c.O}</i>` : '',
+      c.R ? `<i class="R" title="Remoto">${ic('home')} ${c.R}</i>` : '',
+      aus ? `<i class="V" title="Ausentes: vacaciones, incapacidad, evento, permiso o voluntariado">${ic('door-exit')} ${aus}</i>` : ''
     ].join('');
     return `<button type="button" class="${cls}" data-mday="${ymd(d)}">
       <span class="md">${d.getDate()}</span>
@@ -372,7 +374,7 @@ function renderTeamMonth(){
     ${teamHead(`${cap(MESES[state.month])} ${state.year}`, 'Toca un día para ver quién va', 'm', state.year === AÑO_INICIO && state.month === 0, state.year === AÑO_FIN && state.month === 11)}
     <div class="mlegend"><span><i class="O"></i>Oficina</span><span><i class="R"></i>Remoto</span><span><i class="V"></i>Vacaciones / otros</span><span><i class="N"></i>Sin definir</span></div>
     <div class="mgrid">
-      ${weeks[0].map(d => `<div class="mhead">${DIAS_CORTO[d.getDay()]}${isLockedDay(d) || d.getDay() === DIA_OBLIGATORIO ? ' 🔒' : ''}</div>`).join('')}
+      ${weeks[0].map(d => `<div class="mhead">${DIAS_CORTO[d.getDay()]}${isLockedDay(d) || d.getDay() === DIA_OBLIGATORIO ? ' ' + ic('lock', 'sm') : ''}</div>`).join('')}
       ${weeks.map(w => w.map(cell).join('')).join('')}
     </div>
     <div class="mdetail">
@@ -407,9 +409,9 @@ function renderMine(){
     if (e.s === 'F') return `<li><div class="day-row F"><span><span class="d">${DIAS_CORTO[d.getDay()]} ${d.getDate()}</span><small>${esc(e.note)}</small></span><span>Feriado</span></div></li>`;
     const ce = canEdit(p.id, d);
     const locked = isLockedDay(d) && e.s === 'O';
-    const right = e.s === 'N' ? (ce.ok ? '＋ Definir' : '—') : statusText(e) + (locked ? ' 🔒' : '');
+    const right = e.s === 'N' ? (ce.ok ? `${ic('plus')} Definir` : '—') : statusText(e) + (locked ? ' ' + ic('lock', 'sm') : '');
     return `<li><button class="day-row ${e.s} ${locked ? 'locked' : ''} ${isPending(p.id, d) ? 'pending' : ''} ${sameDay(d, t) ? 'is-today' : ''} ${ce.ok ? '' : 'ro'}" data-pid="${p.id}" data-date="${ymd(d)}">
-      <span><span class="d">${DIAS_CORTO[d.getDay()]} ${d.getDate()}</span>${e.note ? `<small>📝 ${esc(e.note)}</small>` : ''}</span>
+      <span><span class="d">${DIAS_CORTO[d.getDay()]} ${d.getDate()}</span>${e.note ? `<small>${ic('note')} ${esc(e.note)}</small>` : ''}</span>
       <span>${right}</span>
     </button></li>`;
   }).join('');
@@ -441,7 +443,7 @@ function renderMine(){
         <h2 class="title">${cap(MESES[state.month])} ${state.year}</h2>
         <p class="hint" style="margin-bottom:10px">Tu mes completo</p>
         <div class="table-wrap"><table class="grid">
-          <thead><tr>${weeks[0].map(d => `<th>${DIAS_CORTO[d.getDay()]}${d.getDay() === DIA_OBLIGATORIO ? ' 🔒' : ''}</th>`).join('')}</tr></thead>
+          <thead><tr>${weeks[0].map(d => `<th>${DIAS_CORTO[d.getDay()]}${d.getDay() === DIA_OBLIGATORIO ? ' ' + ic('lock', 'sm') : ''}</th>`).join('')}</tr></thead>
           <tbody>${weeks.map(wk => `<tr>${wk.map(d => `<td>${cellBtn(p, d, { mini: true, monthOnly: true })}</td>`).join('')}</tr>`).join('')}</tbody>
         </table></div>
       </div>
@@ -451,21 +453,31 @@ function renderMine(){
 
 function renderThisWeek(){
   const fw = focusWeek(), t = hoyReal(), n = state.people.length || 1;
+  // Inicial de cada persona con el color de su avatar
+  const inicial = p => {
+    const [bg, fg] = AVATARES[p.avatar?.color ?? 0];
+    return `<i style="background:${bg};color:${fg}" title="${esc(p.name)}">${esc(((p.name || '?').trim()[0] || '?').toUpperCase())}</i>`;
+  };
   document.getElementById('thisWeek').innerHTML = `
-    <h2 class="title">${fw.label}: quién va a la oficina</h2>
+    <h2 class="title">${fw.label} en la oficina</h2>
     <div class="tw-grid">
       ${fw.days.map(d => {
-        const name = `${cap(DIAS_LARGO[d.getDay()])} ${d.getDate()}`;
-        if (holidayOf(d)) return `<div class="tw-day ${sameDay(d, t) ? 'is-today' : ''}"><h4>${name}</h4><p>Feriado · ${esc(holidayOf(d))}</p><div class="meter"><i class="F" style="width:100%"></i></div></div>`;
-        const c = countsFor(d);
-        const parts = [`${isLockedDay(d) ? '🔒 ' : ''}🏢 ${plural(c.O, 'persona', 'personas')}`];
-        if (c.R) parts.push(`🏠 ${c.R}`);
-        AUSENCIAS.forEach(k => { if (c[k]) parts.push(`${ESTADOS[k].icon} ${c[k]}`); });
-        if (c.N) parts.push(`${c.N} sin definir`);
-        return `<div class="tw-day ${sameDay(d, t) ? 'is-today' : ''}">
-          <h4>${name}${sameDay(d, t) ? ' · hoy' : ''}</h4>
-          <p>${parts.join(' · ')}</p>
-          <div class="meter" aria-hidden="true">${['O','R',...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</div>
+        const hoy = sameDay(d, t);
+        const head = `<div class="tw-head">${DIAS_CORTO[d.getDay()]} ${d.getDate()}${hoy ? '<span class="tw-today">Hoy</span>' : ''}</div>`;
+        if (holidayOf(d)) return `<div class="tw-day ${hoy ? 'is-today' : ''}">${head}<div class="tw-hol">Feriado</div><div class="tw-rest">${esc(holidayOf(d))}</div></div>`;
+        const c = countsFor(d), enOficina = state.people.filter(p => entry(p.id, d).s === 'O');
+        const aus = ausentes(c);
+        const rest = c.O === n && n ? ['Todo el equipo'] : [
+          c.R ? `${ic('home')} ${c.R} en remoto` : '',
+          aus ? `${ic('door-exit')} ${plural(aus, 'ausente', 'ausentes')}` : '',
+          c.N ? `${ic('help-circle')} ${c.N} sin definir` : ''
+        ].filter(Boolean);
+        return `<div class="tw-day ${hoy ? 'is-today' : ''}">
+          ${head}
+          ${isLockedDay(d) ? `<div class="tw-lock">${ic('lock')} Presencial</div>` : ''}
+          <div class="tw-big"><b>${c.O}</b><span>en oficina</span></div>
+          ${enOficina.length ? `<div class="tw-av">${enOficina.slice(0, 6).map(inicial).join('')}${enOficina.length > 6 ? `<i class="more">+${enOficina.length - 6}</i>` : ''}</div>` : `<div class="tw-none">${hoy || d < t ? 'Nadie' : 'Nadie todavía'}</div>`}
+          ${rest.length ? `<div class="tw-rest">${rest.map(r => `<div>${r}</div>`).join('')}</div>` : ''}
         </div>`;
       }).join('')}
     </div>`;
@@ -479,7 +491,7 @@ function renderFeed(){
       const d = parseYmd(c.date), target = personById(c.pid);
       const who = c.pid !== a.author && target ? `<b>${esc(target.name)}</b> · ` : '';
       const from = c.from?.s && ESTADOS[c.from.s] && c.from.s !== 'N' ? ESTADOS[c.from.s].icon : '—';
-      return `<li>${who}${shortDate(d)}: ${from}<span class="arrow">→</span>${statusText(normalize(c.to, d))}${c.to?.note ? `<em>📝 ${esc(c.to.note)}</em>` : ''}</li>`;
+      return `<li>${who}${shortDate(d)}: ${from}<span class="arrow">→</span>${statusText(normalize(c.to, d))}${c.to?.note ? `<em>${ic('note')} ${esc(c.to.note)}</em>` : ''}</li>`;
     }).join('');
     return `<li class="fi">${avatar(au)}<div>
       <div class="fi-top"><b>${esc(au ? au.name : 'Alguien')}</b> subió ${plural(ch.length, 'cambio', 'cambios')}</div>
@@ -490,7 +502,7 @@ function renderFeed(){
   document.getElementById('feed').innerHTML = `
     <h2 class="title">Actualizaciones</h2>
     <p class="hint">Cambios recientes del equipo${state.mode === 'live' ? ' · en vivo' : ''}</p>
-    <ul class="feed-list">${items || `<li class="empty"><span>🗒️</span>Todavía no hay cambios.</li>`}</ul>`;
+    <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>Todavía no hay cambios.</li>`}</ul>`;
 }
 
 function monthInfo(y, m){
@@ -541,7 +553,7 @@ function renderDetails(){
       <dt>Quincena</dt><dd>${wi.codes[0] || '—'}</dd>
       <dt>Días laborables</dt><dd>${wi.work} de 5</dd>
     </dl>` : `<dl><dt>Días laborables</dt><dd>${wi.work} de 5</dd></dl>
-    <p class="split-note">${wi.fys.length > 1 ? '📌 Esta semana empieza un nuevo año fiscal y una nueva quincena.' : '📌 Esta semana cambia de quincena.'}</p>
+    <p class="split-note">${ic('pin')} ${wi.fys.length > 1 ? 'Esta semana empieza un nuevo año fiscal y una nueva quincena.' : 'Esta semana cambia de quincena.'}</p>
     <ul class="seg-list">${weekSegments(wi.days).map(g => `<li>
       <span class="q">Q ${g.code}</span>
       <span class="r"><b>${DIAS_CORTO[g.from.getDay()]} ${g.from.getDate()}${sameDay(g.from, g.to) ? '' : ` – ${DIAS_CORTO[g.to.getDay()]} ${g.to.getDate()}`}</b><small>Año fiscal ${g.fy}</small></span>
@@ -560,9 +572,9 @@ function renderEditbar(){
   if (!state.editing){ bar.innerHTML = ''; return; }
   const bad = invalidPendingWeeks();
   bar.innerHTML = `
-    <div class="txt">${n ? `<span class="count">${n}</span> ${n === 1 ? 'cambio sin subir' : 'cambios sin subir'}` : 'Modo edición'}<small>${bad.length ? `⚠ Pasaste tus días remotos en ${plural(bad.length, 'semana', 'semanas')}` : n ? 'Tus compañeros los verán al subirlos' : 'Toca un día para cambiarlo'}</small></div>
+    <div class="txt">${n ? `<span class="count">${n}</span> ${n === 1 ? 'cambio sin subir' : 'cambios sin subir'}` : 'Modo edición'}<small>${bad.length ? `${ic('alert-triangle')} Pasaste tus días remotos en ${plural(bad.length, 'semana', 'semanas')}` : n ? 'Tus compañeros los verán al subirlos' : 'Toca un día para cambiarlo'}</small></div>
     <button class="btn ghost" id="discardBtn">${n ? 'Descartar' : 'Salir'}</button>
-    <button class="btn up" id="uploadBtn" ${n ? '' : 'disabled'}>⬆ Subir</button>`;
+    <button class="btn up" id="uploadBtn" ${n ? '' : 'disabled'}>${ic('upload')} Subir</button>`;
   document.getElementById('discardBtn').onclick = () => { state.pending = {}; state.editing = false; renderAll(); if (n) toast('Cambios descartados'); };
   document.getElementById('uploadBtn').onclick = upload;
 }
@@ -593,8 +605,8 @@ function openEditor(pid, dateStr){
       <div class="opts" role="group" aria-label="Estado del día" style="margin-top:14px">
         ${EDITABLES.map(k => `<button type="button" class="opt ${k}" data-s="${k}" aria-pressed="${editing.s === k}" ${k === 'R' && rDisabled ? 'disabled' : ''}><span class="e">${ESTADOS[k].icon}</span>${ESTADOS[k].label}</button>`).join('')}
       </div>
-      ${locked ? `<div class="lock-note">🔒 ${MENSAJE_BLOQUEO}. Puedes marcar oficina o cualquier ausencia, pero no remoto.</div>`
-        : !remoteOk ? `<div class="lock-note">🏠 Pasaste tus días remotos: esta semana ya tienes ${plural(REMOTO_POR_SEMANA, 'día remoto', 'días remotos')}. Para usar este día, primero pasa otro día a oficina.</div>` : ''}
+      ${locked ? `<div class="lock-note">${ic('lock')} ${MENSAJE_BLOQUEO}. Puedes marcar oficina o cualquier ausencia, pero no remoto.</div>`
+        : !remoteOk ? `<div class="lock-note">${ic('home')} Pasaste tus días remotos: esta semana ya tienes ${plural(REMOTO_POR_SEMANA, 'día remoto', 'días remotos')}. Para usar este día, primero pasa otro día a oficina.</div>` : ''}
       <div class="field">
         <label for="noteInput">Nota (opcional)</label>
         <input id="noteInput" type="text" maxlength="80" placeholder="Ej. trámite personal por la mañana" value="${esc(e.s === 'N' ? '' : e.note)}">
@@ -635,7 +647,7 @@ async function upload(){
   if (bad.length){
     const b = bad[0];
     setWeek(b.mon); renderAll();
-    toast(`⚠ ${personById(b.pid)?.name || ''}: pasaste tus días remotos la semana del ${b.mon.getDate()} ${MESES[b.mon.getMonth()].slice(0,3)} (máximo ${b.w.tR}).`);
+    toast(`${personById(b.pid)?.name || ''}: pasaste tus días remotos la semana del ${b.mon.getDate()} ${MESES[b.mon.getMonth()].slice(0,3)} (máximo ${b.w.tR}).`);
     return;
   }
   const changes = [];
@@ -663,10 +675,10 @@ async function upload(){
     changes.forEach(c => { (state.days[c.pid] ||= {})[c.date] = { s: c.to.s, note: c.to.note }; });
     state.pending = {}; state.editing = false;
     renderAll();
-    toast(`⬆ ${plural(changes.length, 'cambio subido', 'cambios subidos')}`);
+    toast(cap(plural(changes.length, 'cambio subido', 'cambios subidos')));
   } catch (err) {
     console.error(err);
-    if (btn){ btn.disabled = false; btn.textContent = '⬆ Subir'; }
+    if (btn){ btn.disabled = false; btn.innerHTML = `${ic('upload')} Subir`; }
     toast('No se pudieron subir los cambios. Revisa tu conexión e intenta de nuevo.');
   }
 }
@@ -763,7 +775,7 @@ function paintPending(){
     b.disabled = true;
     const { error } = await sb.rpc('approve_person', { pid: b.dataset.approve });
     if (error){ b.disabled = false; toast('No se pudo aprobar.'); return; }
-    toast('✅ Persona aprobada'); await loadPeople(); paintPending(); paintAdmin(); renderAll();
+    toast('Persona aprobada'); await loadPeople(); paintPending(); paintAdmin(); renderAll();
   });
   box.querySelectorAll('[data-reject]').forEach(b => b.onclick = async () => {
     if (!confirm('¿Rechazar esta solicitud?')) return;
@@ -784,7 +796,7 @@ function paintAdmin(){
         <button type="button" class="av-btn" data-adm-av="${i}" aria-expanded="${admOpen === i}" title="Cambiar avatar">${avatar({ ...p, name: d.name }, d.avatar)}<span class="av-edit">✎</span></button>
         <input data-adm-name="${i}" maxlength="30" value="${esc(d.name)}" aria-label="Nombre">
         <input class="user" data-adm-user="${i}" maxlength="20" value="${esc(d.username)}" placeholder="usuario" aria-label="Usuario" autocapitalize="none">
-        ${p.id === state.me ? '' : `<button type="button" class="icon-btn rm" data-remove="${i}" title="Quitar del equipo" aria-label="Quitar a ${esc(p.name)} del equipo">🗑️</button>`}
+        ${p.id === state.me ? '' : `<button type="button" class="icon-btn rm" data-remove="${i}" title="Quitar del equipo" aria-label="Quitar a ${esc(p.name)} del equipo">${ic('trash')}</button>`}
       </div>
       ${admOpen === i ? pickerHTML(d.avatar, d.name) : ''}
     </div>`;
@@ -838,7 +850,7 @@ document.addEventListener('click', e => {
   const ce = canEdit(b.dataset.pid, d);
   if (!ce.ok){
     const en = entry(b.dataset.pid, d);
-    toast(en.note && en.s !== 'F' ? `📝 ${en.note}` : ce.why);
+    toast(en.note && en.s !== 'F' ? `Nota: ${en.note}` : ce.why);
     return;
   }
   if (!state.editing){ state.editing = true; renderAll(); }
@@ -869,7 +881,7 @@ function effectiveTheme(){
   if (t === 'light' || t === 'dark') return t;
   return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
-function paintThemeBtn(){ document.querySelectorAll('.js-theme').forEach(b => b.textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙'); }
+function paintThemeBtn(){ document.querySelectorAll('.js-theme').forEach(b => b.innerHTML = ic(effectiveTheme() === 'dark' ? 'sun' : 'moon')); }
 try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
 paintThemeBtn();
 document.querySelectorAll('.js-theme').forEach(b => b.onclick = () => {
@@ -1122,6 +1134,8 @@ async function connect(){
 }
 
 /* ================= INICIO ================= */
+// Íconos de los elementos fijos del HTML (data-ico="nombre")
+document.querySelectorAll('[data-ico]').forEach(el => el.insertAdjacentHTML('afterbegin', ic(el.dataset.ico)));
 setWeek(currentWeekMonday());
 connect();
 setInterval(renderFeed, 60000);
