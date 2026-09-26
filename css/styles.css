@@ -257,10 +257,22 @@ td.hol-cell span{font-size:.78rem;line-height:1.35;display:block}
 /* ---------- Esta semana ---------- */
 .thisweek{margin-top:20px}
 .tw-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
-.tw-day{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface-2);min-width:0}
-.tw-day.is-today{border-color:var(--accent)}
-.tw-day h4{margin:0 0 4px;font-size:.93rem}
-.tw-day p{margin:0;font-size:.82rem;color:var(--muted)}
+.tw-day{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface-2);min-width:0;display:flex;flex-direction:column;gap:8px}
+.tw-day.is-today{border:2px solid var(--accent);padding:11px}
+.tw-head{font-size:.9rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.tw-today{font-size:.7rem;font-weight:700;color:var(--O-ink);background:var(--O-bg);padding:1px 8px;border-radius:999px}
+.tw-lock{font-size:.74rem;color:var(--muted);display:flex;align-items:center;gap:4px;margin-top:-4px}
+.tw-big{display:flex;align-items:baseline;gap:6px}
+.tw-big b{font-size:1.6rem;font-weight:800;line-height:1}
+.tw-big span{font-size:.8rem;color:var(--muted)}
+.tw-av{display:flex;min-height:24px}
+.tw-av i{width:24px;height:24px;border-radius:50%;border:2px solid var(--surface-2);margin-left:-6px;font-style:normal;font-size:.68rem;font-weight:800;display:grid;place-items:center;flex:none}
+.tw-av i:first-child{margin-left:0}
+.tw-av i.more{background:var(--lock-bg);color:var(--lock-ink)}
+.tw-none{font-size:.8rem;color:var(--muted);min-height:24px;display:flex;align-items:center}
+.tw-hol{font-size:1rem;font-weight:700;color:var(--muted)}
+.tw-rest{font-size:.8rem;color:var(--muted);line-height:1.55;border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.tw-rest div{display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .meter{display:flex;height:6px;border-radius:999px;overflow:hidden;margin-top:10px;background:var(--line)}
 .meter i{display:block;height:100%}
 .meter .O{background:var(--O-ink);opacity:.6} .meter .R{background:var(--R-ink);opacity:.45}
@@ -503,7 +515,7 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
   .side{grid-template-columns:1fr}
   .tw-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
   .tw-grid::-webkit-scrollbar{display:none}
-  .tw-day{flex:0 0 42%;scroll-snap-align:start}
+  .tw-day{flex:0 0 44%;scroll-snap-align:start}
   .mini .cell{min-height:48px;padding:4px 2px}
   .team-head{flex-wrap:wrap;gap:10px 8px}
   .team-head .team-seg{order:-1;flex:0 0 100%;display:grid;margin:0}

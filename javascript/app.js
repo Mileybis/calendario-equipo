@@ -453,21 +453,31 @@ function renderMine(){
 
 function renderThisWeek(){
   const fw = focusWeek(), t = hoyReal(), n = state.people.length || 1;
+  // Inicial de cada persona con el color de su avatar
+  const inicial = p => {
+    const [bg, fg] = AVATARES[p.avatar?.color ?? 0];
+    return `<i style="background:${bg};color:${fg}" title="${esc(p.name)}">${esc(((p.name || '?').trim()[0] || '?').toUpperCase())}</i>`;
+  };
   document.getElementById('thisWeek').innerHTML = `
-    <h2 class="title">${fw.label}: quién va a la oficina</h2>
+    <h2 class="title">${fw.label} en la oficina</h2>
     <div class="tw-grid">
       ${fw.days.map(d => {
-        const name = `${cap(DIAS_LARGO[d.getDay()])} ${d.getDate()}`;
-        if (holidayOf(d)) return `<div class="tw-day ${sameDay(d, t) ? 'is-today' : ''}"><h4>${name}</h4><p>Feriado · ${esc(holidayOf(d))}</p><div class="meter"><i class="F" style="width:100%"></i></div></div>`;
-        const c = countsFor(d);
-        const parts = [`${isLockedDay(d) ? ic('lock') + ' ' : ''}${ic('building')} ${plural(c.O, 'persona', 'personas')}`];
-        if (c.R) parts.push(`${ic('home')} ${c.R}`);
-        AUSENCIAS.forEach(k => { if (c[k]) parts.push(`${ESTADOS[k].icon} ${c[k]}`); });
-        if (c.N) parts.push(`${c.N} sin definir`);
-        return `<div class="tw-day ${sameDay(d, t) ? 'is-today' : ''}">
-          <h4>${name}${sameDay(d, t) ? ' · hoy' : ''}</h4>
-          <p>${parts.join(' · ')}</p>
-          <div class="meter" aria-hidden="true">${['O','R',...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</div>
+        const hoy = sameDay(d, t);
+        const head = `<div class="tw-head">${DIAS_CORTO[d.getDay()]} ${d.getDate()}${hoy ? '<span class="tw-today">Hoy</span>' : ''}</div>`;
+        if (holidayOf(d)) return `<div class="tw-day ${hoy ? 'is-today' : ''}">${head}<div class="tw-hol">Feriado</div><div class="tw-rest">${esc(holidayOf(d))}</div></div>`;
+        const c = countsFor(d), enOficina = state.people.filter(p => entry(p.id, d).s === 'O');
+        const aus = ausentes(c);
+        const rest = c.O === n && n ? ['Todo el equipo'] : [
+          c.R ? `${ic('home')} ${c.R} en remoto` : '',
+          aus ? `${ic('door-exit')} ${plural(aus, 'ausente', 'ausentes')}` : '',
+          c.N ? `${ic('help-circle')} ${c.N} sin definir` : ''
+        ].filter(Boolean);
+        return `<div class="tw-day ${hoy ? 'is-today' : ''}">
+          ${head}
+          ${isLockedDay(d) ? `<div class="tw-lock">${ic('lock')} Presencial</div>` : ''}
+          <div class="tw-big"><b>${c.O}</b><span>en oficina</span></div>
+          ${enOficina.length ? `<div class="tw-av">${enOficina.slice(0, 6).map(inicial).join('')}${enOficina.length > 6 ? `<i class="more">+${enOficina.length - 6}</i>` : ''}</div>` : `<div class="tw-none">${hoy || d < t ? 'Nadie' : 'Nadie todavía'}</div>`}
+          ${rest.length ? `<div class="tw-rest">${rest.map(r => `<div>${r}</div>`).join('')}</div>` : ''}
         </div>`;
       }).join('')}
     </div>`;
