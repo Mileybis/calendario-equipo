@@ -309,14 +309,15 @@ function renderSummary(){
   // Semana: foto de hoy
   const t = hoyReal(), off = !isWorkday(t), c = off ? null : countsFor(t);
   const offMsg = holidayOf(t) ? 'Hoy es feriado' : 'Hoy no es laborable';
-  const val = x => off ? '—' : x, pct = x => off || !n ? 0 : x / n * 100;
-  const lbl = s => off ? offMsg : `${s} hoy · de ${n}`;
+  const pct = x => off || !n ? 0 : x / n * 100;
+  const val = x => off ? '—' : `${x}<span class="of"> de ${n}</span>`;
+  const lbl = s => off ? offMsg : `${s} hoy`;
   const wi = weekInfo(state.weekStart);
   el.innerHTML =
     statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O)) +
     statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R)) +
     statHTML('V', 'door-exit', val(c ? ausentes(c) : 0), lbl('Ausentes'), pct(c ? ausentes(c) : 0)) +
-    statHTML('N', 'help-circle', val(c?.N), off ? offMsg : 'Sin definir hoy', pct(c?.N)) +
+    statHTML('N', 'help-circle', val(c?.N), lbl('Sin definir'), pct(c?.N)) +
     statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20);
 }
 
