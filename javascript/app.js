@@ -8,7 +8,7 @@ const ESTADOS = {
   O: { icon: ic('building'), label: 'Oficina' },
   V: { icon: ic('beach'), label: 'Vacaciones' },
   I: { icon: ic('stethoscope'), label: 'Incapacidad' },
-  E: { icon: ic('confetti'), label: 'Evento' },
+  E: { icon: ic('calendar-star'), label: 'Evento' },
   P: { icon: ic('clock'), label: 'Permiso' },
   VL: { icon: ic('heart-handshake'), label: 'Voluntariado' },
   N: { icon: ic('plus'), label: 'Sin definir' },
