@@ -184,11 +184,10 @@ function weekCheck(pid, mon, override){
     const s = override && override.date === ymd(d) ? override.s : entry(pid, d).s;
     c[s]++;
   });
-  // Las ausencias (vacaciones, incapacidad, evento, permiso, voluntariado) NO reducen los días remotos permitidos.
-  // Solo los feriados los reducen (semana de 4 días laborables = 1 remoto).
+  // Ni los feriados ni las ausencias reducen los días remotos: siempre se permiten
+  // REMOTO_POR_SEMANA (una semana de 4 días laborables también tiene 2 remotos).
   const work = 5 - c.F;
-  const tO = Math.min(OFICINA_POR_SEMANA, work);
-  const tR = Math.min(REMOTO_POR_SEMANA, Math.max(0, work - tO));
+  const tR = Math.min(REMOTO_POR_SEMANA, work);
   return { ...c, tR, ok: c.R <= tR };
 }
 function invalidPendingWeeks(){
