@@ -19,7 +19,7 @@ Manual rápido para usar la aplicación de control de días de **oficina**, **tr
 | Regla | Detalle |
 |---|---|
 | 🔒 **Martes presencial** | Siempre Oficina. Se puede marcar cualquier ausencia (Vacaciones, Incapacidad, Evento, Permiso, Voluntariado), pero no Remoto. |
-| 🏠 **Máximo 2 días remotos** por semana | En semanas con feriado, el cupo baja. Ir más días a la oficina siempre está permitido. |
+| 🏠 **Máximo 2 días remotos** por semana | Los feriados no cuentan como remoto: en una semana con feriado siguen permitidos 2 días remotos. Ir más días a la oficina siempre está permitido. |
 | 📅 **Desde esta semana en adelante** | No se pueden cambiar semanas pasadas. |
 
 ---

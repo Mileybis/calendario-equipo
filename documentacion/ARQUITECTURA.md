@@ -104,7 +104,7 @@ erDiagram
 | Regla | Dónde se aplica |
 |---|---|
 | Martes presencial obligatorio (no puede ser Remoto) | Cliente (`normalize`, editor) |
-| Máximo 2 días remotos por semana (los feriados reducen el cupo; vacaciones e incapacidad no) | Cliente (`weekCheck`, validación al subir) |
+| Máximo 2 días remotos por semana (ni los feriados ni las ausencias reducen el cupo) | Cliente (`weekCheck`, validación al subir) |
 | Cada persona edita solo su calendario | Cliente **y** base de datos (RLS) |
 | Solo se edita desde la semana actual en adelante (excepto admin) | Cliente **y** base de datos (RLS) |
 | Feriados no editables | Cliente |
