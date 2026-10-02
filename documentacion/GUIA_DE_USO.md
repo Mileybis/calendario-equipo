@@ -87,7 +87,7 @@ En **Mi perfil** activa **Recibir correos de actualizaciones** para recibir un *
 
 ## Recordatorio de los viernes
 
-En **Mi perfil** activa **Recordatorio de los viernes**. Cada viernes a las 10:00 a. m. (hora de Panamá), si te faltan días por definir de la próxima semana, te llega un correo con esos días. No cuenta feriados ni el martes. Empieza apagado.
+En **Mi perfil** activa **Recordatorios**. Cada viernes a las 10:00 a. m. (hora de Panamá), si te faltan días por definir de la próxima semana, te llega un correo con esos días. No cuenta feriados ni el martes. Empieza apagado.
 
 ## Instalar la app en el celular
 
