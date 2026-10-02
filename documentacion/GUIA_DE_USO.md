@@ -79,3 +79,7 @@ También puedes cambiar entre **modo claro y oscuro** con 🌙 / ☀️.
 - Editar nombres, usuarios y avatares de cualquier persona.
 - Cambiar días de cualquier persona y de semanas pasadas.
 - **🗑️ Quitar** a alguien del equipo (borra su cuenta y sus días).
+
+## Correos de actualizaciones
+
+En **Mi perfil** activa **Recibir correos de actualizaciones** para que te llegue un correo cada vez que alguien del equipo sube cambios. No recibes correo de tus propios cambios. Puedes apagarlo cuando quieras en el mismo lugar.

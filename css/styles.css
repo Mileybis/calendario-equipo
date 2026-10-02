@@ -390,6 +390,10 @@ dialog::backdrop{background:rgba(20,24,29,.45)}
 .info-note{font-size:1rem;font-style:italic;background:var(--surface-2);border-radius:12px;padding:12px 14px;overflow-wrap:anywhere}
 .info-why{margin:12px 0 0;display:flex;align-items:center;gap:6px}
 .field .select{width:100%}
+.check-field{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);cursor:pointer}
+.check-field input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.check-field b{display:block;font-size:.92rem}
+.check-field small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;overflow-wrap:anywhere}
 .adm-top input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);padding:0 12px}
 .adm-top .user{max-width:130px}
 .adm-top .rm{flex:none}
