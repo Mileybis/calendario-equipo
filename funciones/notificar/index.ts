@@ -1,7 +1,7 @@
 // =====================================================================
 //  Hybrid Work Planner — función "notificar" (Supabase Edge Function)
 //  Envía UN correo de resumen por persona que actualizó su calendario.
-//  La llama una tarea programada de la base (pg_cron) cada 2 minutos: junta
+//  La llama una tarea programada de la base (pg_cron) cada minuto: junta
 //  las actualizaciones aún no avisadas de cada persona y, cuando esa persona
 //  lleva ESPERA_MIN minutos sin subir más cambios, envía el resumen a
 //  quienes activaron "Recibir correos de actualizaciones" (no al autor).
@@ -11,7 +11,7 @@
 // =====================================================================
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const ESPERA_MIN = 5;    // minutos sin cambios antes de enviar el resumen
+const ESPERA_MIN = 3;    // minutos sin cambios antes de enviar el resumen
 const APP_URL = 'https://mileybis.github.io/calendario-equipo/';
 const ESTADOS: Record<string, string> = {
   R: 'Remoto', O: 'Oficina', V: 'Vacaciones', I: 'Incapacidad',

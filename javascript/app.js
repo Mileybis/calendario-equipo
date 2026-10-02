@@ -542,7 +542,7 @@ function renderFeed(){
     const lis = ch.slice(0, 4).map(c => {
       const d = parseYmd(c.date), target = personById(c.pid);
       const who = c.pid !== a.author && target ? ` · ${esc(target.name)}` : '';
-      return `<li><div class="fi-day">${shortDate(d)}${who}</div>
+      return `<li class="fi-go" data-goto="${esc(c.date)}" data-gpid="${esc(c.pid || '')}" role="button" tabindex="0" title="Ver este día en el calendario"><div class="fi-day">${shortDate(d)}${who}</div>
         <div class="fi-flow">${statusPill(c.from)}${ic('arrow-right', 'fi-arrow')}${statusPill(normalize(c.to, d))}</div>
         ${c.to?.note ? `<div class="fi-note">"${esc(c.to.note)}"</div>` : ''}</li>`;
     }).join('');
@@ -556,6 +556,26 @@ function renderFeed(){
     <p class="hint">${r.label}${state.mode === 'live' ? ' · en vivo' : ''}</p>
     <ul class="feed-list">${items || `<li class="empty"><span>${ic('notes')}</span>${r.empty}</li>`}</ul>`;
 }
+// Tocar una actualización lleva a ese día en el calendario y lo resalta
+function goToChange(date, pid){
+  const d = parseYmd(date);
+  setWeek(mondayOf(d)); state.month = d.getMonth(); state.year = d.getFullYear(); state.teamDay = date;
+  if (!(state.view === 'mine' && pid === state.me)) state.view = 'team';
+  renderAll();
+  const sel = isMonthView() ? `[data-mday="${date}"]` : `[data-pid="${pid}"][data-date="${date}"]`;
+  const el = document.querySelector(sel) || document.querySelector(`[data-date="${date}"], [data-mday="${date}"]`);
+  (el || document.getElementById('view')).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (el) el.classList.add('pop', 'flash');
+}
+const feedEl = document.getElementById('feed');
+feedEl.addEventListener('click', e => {
+  const li = e.target.closest('[data-goto]');
+  if (li) goToChange(li.dataset.goto, li.dataset.gpid);
+});
+feedEl.addEventListener('keydown', e => {
+  const li = e.target.closest('[data-goto]');
+  if (li && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); goToChange(li.dataset.goto, li.dataset.gpid); }
+});
 
 function monthInfo(y, m){
   const days = [], last = new Date(y, m + 1, 0).getDate();
@@ -778,11 +798,12 @@ function paintProfile(){
     <div class="field"><label for="profUser">Usuario</label><input id="profUser" maxlength="20" autocapitalize="none" spellcheck="false" value="${esc(profDraft.username)}"><small>Para entrar sin escribir tu correo. Solo minúsculas, números, punto o guion.</small></div>
     <div class="field"><label for="profRole">Rol</label><select id="profRole" class="select">${roleOptions(profDraft.role)}</select><small>Gerente y superiores pueden poner días remotos sin límite. El martes es presencial para todos.</small></div>
     <label class="check-field"><input type="checkbox" id="profMail" ${profDraft.notificar ? 'checked' : ''}><span><b>Recibir correos de actualizaciones</b><small>Te llega un correo a ${esc(p.email || 'tu correo')} cada vez que alguien del equipo sube cambios.</small></span></label>
+    <label class="check-field"><input type="checkbox" id="profRemind" ${profDraft.recordar ? 'checked' : ''}><span><b>Recordatorio de los viernes</b><small>Si te faltan días por definir de la próxima semana, te llega un correo el viernes en la mañana.</small></span></label>
     <button type="button" class="btn primary" id="profSave" style="margin-top:14px;width:100%">Guardar perfil</button>
     <hr class="sep">
     <div class="field"><label for="profPass">Cambiar contraseña</label><input id="profPass" type="password" minlength="6" placeholder="Nueva contraseña (mínimo 6 caracteres)" autocomplete="new-password"></div>
     <button type="button" class="btn" id="profPassBtn" style="margin-top:10px;width:100%">Guardar contraseña</button>`;
-  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; profDraft.notificar = body.querySelector('#profMail').checked; };
+  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; profDraft.notificar = body.querySelector('#profMail').checked; profDraft.recordar = body.querySelector('#profRemind').checked; };
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
@@ -791,7 +812,7 @@ function paintProfile(){
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
     if (!name){ toast('Escribe tu nombre.'); return; }
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast('Usuario: 3 a 20 caracteres, solo minúsculas, números, punto o guion.'); return; }
-    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role, notificar: profDraft.notificar });
+    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role, notificar: profDraft.notificar, recordar: profDraft.recordar });
     if (ok){ profileDlg.close(); toast('Perfil guardado'); }
   };
   body.querySelector('#profPassBtn').onclick = async () => {
@@ -803,11 +824,12 @@ function paintProfile(){
     else { body.querySelector('#profPass').value = ''; toast('Contraseña actualizada'); }
   };
 }
-async function savePerson(id, { name, username, avatar: av, role: rawRole, notificar }){
+async function savePerson(id, { name, username, avatar: av, role: rawRole, notificar, recordar }){
   const i = state.people.findIndex(p => p.id === id);
   const clean = cleanAvatar(av, i), role = cleanRole(rawRole);
   const cambios = { name, username, avatar_icon: clean.icon, avatar_color: clean.color, role };
   if (notificar !== undefined) cambios.notificar_correo = !!notificar;   // solo desde el propio perfil
+  if (recordar !== undefined) cambios.recordatorio = !!recordar;
   if (state.mode === 'live' && sb){
     const { error } = await sb.from('people').update(cambios).eq('id', id);
     if (error){
@@ -815,13 +837,13 @@ async function savePerson(id, { name, username, avatar: av, role: rawRole, notif
       return false;
     }
   }
-  Object.assign(state.people[i], { name, username, avatar: clean, role }, notificar !== undefined ? { notificar: !!notificar } : {});
+  Object.assign(state.people[i], { name, username, avatar: clean, role }, notificar !== undefined ? { notificar: !!notificar } : {}, recordar !== undefined ? { recordar: !!recordar } : {});
   renderAll();
   return true;
 }
 document.querySelectorAll('.js-me').forEach(b => b.onclick = () => {
   const p = personById(state.me); if (!p) return;
-  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role), notificar: !!p.notificar };
+  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role), notificar: !!p.notificar, recordar: !!p.recordar };
   profPicker = false; paintProfile(); openDlg(profileDlg);
 });
 document.getElementById('profileClose').onclick = () => profileDlg.close();
@@ -1107,7 +1129,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
 document.getElementById('gateOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 document.getElementById('gateRetry').onclick = () => location.reload();
 
-function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), notificar: !!r.notificar_correo, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
+function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), notificar: !!r.notificar_correo, recordar: !!r.recordatorio, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
 function rowToDay(r){ (state.days[r.person_id] ||= {})[r.day] = { s: r.status, note: r.note || '' }; }
 function rowToAct(r){ return { id: String(r.id), at: Date.parse(r.at), author: r.author, changes: r.changes || [] }; }
 
@@ -1237,3 +1259,6 @@ document.querySelectorAll('[data-ico]').forEach(el => el.insertAdjacentHTML('aft
 setWeek(currentWeekMonday());
 connect();
 setInterval(renderFeed, 60000);
+
+// App instalable en el celular (ver sw.js)
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

@@ -59,6 +59,7 @@ El panel **Detalles** muestra año fiscal, quincena(s), días laborables y feria
 ## 6. Actualizaciones
 
 Panel con el historial en vivo: quién subió cambios, cuándo y qué cambió (antes → después).
+Toca un cambio para ir a ese día en el calendario; la casilla se marca por un momento.
 
 ---
 
@@ -82,4 +83,15 @@ También puedes cambiar entre **modo claro y oscuro** con 🌙 / ☀️.
 
 ## Correos de actualizaciones
 
-En **Mi perfil** activa **Recibir correos de actualizaciones** para recibir un **resumen** de los cambios de cada persona: el correo sale unos 5 minutos después de que esa persona termina de subir cambios, aunque haya subido varias veces. No recibes correo de tus propios cambios. Puedes apagarlo cuando quieras en el mismo lugar.
+En **Mi perfil** activa **Recibir correos de actualizaciones** para recibir un **resumen** de los cambios de cada persona: el correo sale unos 3 minutos después de que esa persona termina de subir cambios, aunque haya subido varias veces. No recibes correo de tus propios cambios. Puedes apagarlo cuando quieras en el mismo lugar.
+
+## Recordatorio de los viernes
+
+En **Mi perfil** activa **Recordatorio de los viernes**. Cada viernes a las 10:00 a. m. (hora de Panamá), si te faltan días por definir de la próxima semana, te llega un correo con esos días. No cuenta feriados ni el martes. Empieza apagado.
+
+## Instalar la app en el celular
+
+- **iPhone (Safari):** abre el calendario → botón **Compartir** → **Agregar a pantalla de inicio**.
+- **Android (Chrome):** abre el calendario → menú **⋮** → **Instalar app** (o **Agregar a pantalla principal**).
+
+Queda un ícono con el robot y la app abre en pantalla completa. Se actualiza sola.
