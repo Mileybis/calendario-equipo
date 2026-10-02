@@ -76,7 +76,7 @@ Deno.serve(async req => {
         <p style="color:#687383;font-size:13px;margin:0 0 14px">Semana del ${esc(fecha(lunes))}. Indica si vas a la oficina, trabajas remoto o tienes alguna ausencia:</p>
         <ul style="background:#F7F8FA;border-radius:10px;padding:12px 12px 12px 32px;margin:0">${lista}</ul>
         <p style="margin:18px 0"><a href="${APP_URL}" style="background:#3A4A96;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Abrir el calendario</a></p>
-        <p style="color:#98A2AE;font-size:12px">Recibes este correo porque tienes encendido "Recordatorio de los viernes" en tu perfil. Puedes apagarlo ahí mismo.</p>
+        <p style="color:#98A2AE;font-size:12px">Recibes este correo porque activaste "Recordatorio de los viernes" en tu perfil. Puedes apagarlo ahí mismo.</p>
       </div>`;
       const r = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',

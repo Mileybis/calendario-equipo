@@ -843,7 +843,7 @@ async function savePerson(id, { name, username, avatar: av, role: rawRole, notif
 }
 document.querySelectorAll('.js-me').forEach(b => b.onclick = () => {
   const p = personById(state.me); if (!p) return;
-  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role), notificar: !!p.notificar, recordar: p.recordar !== false };
+  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role), notificar: !!p.notificar, recordar: !!p.recordar };
   profPicker = false; paintProfile(); openDlg(profileDlg);
 });
 document.getElementById('profileClose').onclick = () => profileDlg.close();
@@ -1129,7 +1129,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
 document.getElementById('gateOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 document.getElementById('gateRetry').onclick = () => location.reload();
 
-function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), notificar: !!r.notificar_correo, recordar: r.recordatorio !== false, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
+function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), notificar: !!r.notificar_correo, recordar: !!r.recordatorio, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
 function rowToDay(r){ (state.days[r.person_id] ||= {})[r.day] = { s: r.status, note: r.note || '' }; }
 function rowToAct(r){ return { id: String(r.id), at: Date.parse(r.at), author: r.author, changes: r.changes || [] }; }
 
