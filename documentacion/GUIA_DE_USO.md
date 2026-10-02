@@ -20,6 +20,7 @@ Manual rápido para usar la aplicación de control de días de **oficina**, **tr
 |---|---|
 | 🔒 **Martes presencial** | Siempre Oficina. Se puede marcar cualquier ausencia (Vacaciones, Incapacidad, Evento, Permiso, Voluntariado), pero no Remoto. |
 | 🏠 **Máximo 2 días remotos** por semana | Los feriados no cuentan como remoto: en una semana con feriado siguen permitidos 2 días remotos. Ir más días a la oficina siempre está permitido. |
+| 👔 **Roles** | Cada persona elige su rol en **Mi perfil**. Gerente, Gerente Senior, Director y Socio pueden poner días remotos sin límite; Supervisor, Staff y Asistente, máximo 2. El martes es presencial para todos. |
 | 📅 **Desde esta semana en adelante** | No se pueden cambiar semanas pasadas. |
 
 ---

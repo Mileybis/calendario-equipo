@@ -57,7 +57,8 @@ calendario-equipo/
 │       ├── 003_quitar_personas.sql
 │       ├── 004_sin_aprobacion.sql
 │       ├── 005_login_google.sql
-│       └── 006_tipos_evento_permiso_voluntariado.sql
+│       ├── 006_tipos_evento_permiso_voluntariado.sql
+│       └── 007_roles.sql
 ├── imagenes/                  # Imágenes
 │   ├── favicon.svg            # Ícono de la pestaña
 │   └── robot.webp             # Mascota del equipo (pantalla de acceso)
@@ -91,7 +92,8 @@ Todo lo configurable está en **`javascript/config.js`**:
 | `SUPABASE_URL` / `SUPABASE_KEY` | Proyecto del equipo | Conexión a la base de datos (clave pública) |
 | `AÑO_INICIO` / `AÑO_FIN` | 2026 / 2030 | Rango de años navegables |
 | `DIA_OBLIGATORIO` | 2 (martes) | Día presencial obligatorio |
-| `REMOTO_POR_SEMANA` | 2 | Máximo de días remotos por semana |
+| `REMOTO_POR_SEMANA` | 2 | Máximo de días remotos por semana (roles sin límite aparte) |
+| `ROLES` | Socio … Asistente | Roles del equipo; Gerente y superiores tienen remotos sin límite |
 | `NOTAS_RAPIDAS` | Lista | Sugerencias de notas en el editor |
 
 ---

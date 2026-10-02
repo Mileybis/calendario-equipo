@@ -93,6 +93,9 @@ const state = {
 };
 const MAX_ACTIVIDAD = 300;   // cambios recientes que se cargan para Actualizaciones
 const personById = id => state.people.find(p => p.id === id);
+const rolOf = p => ROLES.find(r => r.id === p?.role) || ROLES.find(r => r.id === ROL_POR_DEFECTO);
+const cleanRole = r => ROLES.some(x => x.id === r) ? r : ROL_POR_DEFECTO;
+const roleOptions = sel => ROLES.map(r => `<option value="${r.id}" ${r.id === sel ? 'selected' : ''}>${r.label}</option>`).join('');
 const pendingCount = () => Object.keys(state.pending).length;
 
 /* ================= SEMANAS ================= */
@@ -186,9 +189,11 @@ function weekCheck(pid, mon, override){
   });
   // Ni los feriados ni las ausencias reducen los días remotos: siempre se permiten
   // REMOTO_POR_SEMANA (una semana de 4 días laborables también tiene 2 remotos).
+  // Los roles sinLimite (Gerente y superiores) pueden usar todos los días laborables.
   const work = 5 - c.F;
-  const tR = Math.min(REMOTO_POR_SEMANA, work);
-  return { ...c, tR, ok: c.R <= tR };
+  const sinLimite = rolOf(personById(pid)).sinLimite;
+  const tR = sinLimite ? work : Math.min(REMOTO_POR_SEMANA, work);
+  return { ...c, tR, sinLimite, ok: c.R <= tR };
 }
 function invalidPendingWeeks(){
   const seen = new Set(), bad = [];
@@ -277,8 +282,9 @@ function renderControls(){
     b.innerHTML = ic('settings') + (n ? `<span class="badge">${n}</span>` : '');
   });
   const sync = document.getElementById('sync');
-  sync.className = 'sync' + (state.mode === 'live' ? ' live' : '');
-  sync.querySelector('span').textContent = state.mode === 'live' ? 'En vivo con tu equipo' : state.mode === 'local' ? 'Modo de prueba (sin conexión)' : 'Conectando…';
+  const vivo = state.mode === 'live' && state.liveOk !== false;
+  sync.className = 'sync' + (vivo ? ' live' : '');
+  sync.querySelector('span').textContent = state.mode === 'live' ? (vivo ? 'En vivo con tu equipo' : 'Reconectando…') : state.mode === 'local' ? 'Modo de prueba (sin conexión)' : 'Conectando…';
   document.getElementById('editBtn').hidden = state.editing;
   document.body.classList.toggle('editing', state.editing);
   document.getElementById('tabTeam').setAttribute('aria-selected', state.view === 'team');
@@ -454,9 +460,9 @@ function renderMine(){
   document.getElementById('view').innerHTML = `
     <div class="mine">
       <div class="panel">
-        <div class="me-name">${avatar(p)}<div><h2>${esc(p.name)}</h2><p class="me-sub" style="margin:0">${state.isAdmin ? 'Administrador' : 'Mi calendario'}</p></div></div>
+        <div class="me-name">${avatar(p)}<div><h2>${esc(p.name)}</h2><p class="me-sub" style="margin:0">${rolOf(p).label}${state.isAdmin ? ' · Administrador' : ''}</p></div></div>
         <div style="height:12px"></div>
-        ${weekNav(fw, `Remotos: ${w.R} de ${w.tR}`)}
+        ${weekNav(fw, w.sinLimite ? `Remotos: ${w.R} · sin límite` : `Remotos: ${w.R} de ${w.tR}`)}
         <ul class="day-list">${rows}</ul>
         <h3 class="sub">Resumen de la semana</h3>
         <div class="tally">${chips(tally)}</div>
@@ -676,6 +682,20 @@ function openEditor(pid, dateStr){
   input.onkeydown = ev => { if (ev.key === 'Enter' && editing.s){ ev.preventDefault(); body.querySelector('#edApply').click(); } };
   openDlg(editorDlg);
 }
+// Solo ver: detalle de un día que no se puede editar (de otra persona o pasado)
+function openDayInfo(pid, dateStr, why){
+  const d = parseYmd(dateStr), p = personById(pid), e = entry(pid, d);
+  document.getElementById('dayEditorBody').innerHTML = `
+    <div class="modal-body">
+      <div class="prof-head">${avatar(p)}<div><h3>${esc(p?.name || '')}</h3><p class="hint" style="margin:0">${cap(DIAS_LARGO[d.getDay()])} ${d.getDate()} de ${MESES[d.getMonth()]}</p></div></div>
+      <div class="info-status">${e.s === 'N' ? '<span class="chip sm N">Sin definir</span>' : statusPill(e)}</div>
+      <div class="info-note">${e.note ? `"${esc(e.note)}"` : '<span class="hint">Sin nota</span>'}</div>
+      <p class="hint info-why">${ic('lock', 'sm')} ${esc(why || 'Solo lectura')}</p>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" id="infoClose">Cerrar</button></div>`;
+  document.getElementById('infoClose').onclick = () => editorDlg.close();
+  openDlg(editorDlg);
+}
 function applyEdit(){
   const { pid, date } = editing;
   const d = parseYmd(date);
@@ -756,11 +776,12 @@ function paintProfile(){
     ${profPicker ? pickerHTML(profDraft.avatar, profDraft.name) : ''}
     <div class="field"><label for="profName">Nombre</label><input id="profName" maxlength="30" value="${esc(profDraft.name)}"></div>
     <div class="field"><label for="profUser">Usuario</label><input id="profUser" maxlength="20" autocapitalize="none" spellcheck="false" value="${esc(profDraft.username)}"><small>Para entrar sin escribir tu correo. Solo minúsculas, números, punto o guion.</small></div>
+    <div class="field"><label for="profRole">Rol</label><select id="profRole" class="select">${roleOptions(profDraft.role)}</select><small>Gerente y superiores pueden poner días remotos sin límite. El martes es presencial para todos.</small></div>
     <button type="button" class="btn primary" id="profSave" style="margin-top:14px;width:100%">Guardar perfil</button>
     <hr class="sep">
     <div class="field"><label for="profPass">Cambiar contraseña</label><input id="profPass" type="password" minlength="6" placeholder="Nueva contraseña (mínimo 6 caracteres)" autocomplete="new-password"></div>
     <button type="button" class="btn" id="profPassBtn" style="margin-top:10px;width:100%">Guardar contraseña</button>`;
-  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; };
+  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; };
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
@@ -769,7 +790,7 @@ function paintProfile(){
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
     if (!name){ toast('Escribe tu nombre.'); return; }
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast('Usuario: 3 a 20 caracteres, solo minúsculas, números, punto o guion.'); return; }
-    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar });
+    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role });
     if (ok){ profileDlg.close(); toast('Perfil guardado'); }
   };
   body.querySelector('#profPassBtn').onclick = async () => {
@@ -781,23 +802,23 @@ function paintProfile(){
     else { body.querySelector('#profPass').value = ''; toast('Contraseña actualizada'); }
   };
 }
-async function savePerson(id, { name, username, avatar: av }){
+async function savePerson(id, { name, username, avatar: av, role: rawRole }){
   const i = state.people.findIndex(p => p.id === id);
-  const clean = cleanAvatar(av, i);
+  const clean = cleanAvatar(av, i), role = cleanRole(rawRole);
   if (state.mode === 'live' && sb){
-    const { error } = await sb.from('people').update({ name, username, avatar_icon: clean.icon, avatar_color: clean.color }).eq('id', id);
+    const { error } = await sb.from('people').update({ name, username, avatar_icon: clean.icon, avatar_color: clean.color, role }).eq('id', id);
     if (error){
       toast(error.code === '23505' ? `El usuario "${username}" ya está en uso.` : 'No se pudo guardar. Intenta de nuevo.');
       return false;
     }
   }
-  Object.assign(state.people[i], { name, username, avatar: clean });
+  Object.assign(state.people[i], { name, username, avatar: clean, role });
   renderAll();
   return true;
 }
 document.querySelectorAll('.js-me').forEach(b => b.onclick = () => {
   const p = personById(state.me); if (!p) return;
-  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar } };
+  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role) };
   profPicker = false; paintProfile(); openDlg(profileDlg);
 });
 document.getElementById('profileClose').onclick = () => profileDlg.close();
@@ -835,6 +856,7 @@ function paintAdmin(){
   const box = document.getElementById('admList');
   box.querySelectorAll('[data-adm-name]').forEach(inp => { admDraft[+inp.dataset.admName].name = inp.value; });
   box.querySelectorAll('[data-adm-user]').forEach(inp => { admDraft[+inp.dataset.admUser].username = inp.value; });
+  box.querySelectorAll('[data-adm-role]').forEach(sel => { admDraft[+sel.dataset.admRole].role = sel.value; });
   box.innerHTML = state.people.map((p, i) => {
     const d = admDraft[i];
     return `<div class="adm-row">
@@ -844,6 +866,7 @@ function paintAdmin(){
         <input class="user" data-adm-user="${i}" maxlength="20" value="${esc(d.username)}" placeholder="usuario" aria-label="Usuario" autocapitalize="none">
         ${p.id === state.me ? '' : `<button type="button" class="icon-btn rm" data-remove="${i}" title="Quitar del equipo" aria-label="Quitar a ${esc(p.name)} del equipo">${ic('trash')}</button>`}
       </div>
+      <select class="select adm-role" data-adm-role="${i}" aria-label="Rol de ${esc(d.name)}">${roleOptions(d.role)}</select>
       ${admOpen === i ? pickerHTML(d.avatar, d.name) : ''}
     </div>`;
   }).join('');
@@ -870,7 +893,7 @@ function paintAdmin(){
 }
 document.querySelectorAll('.js-settings').forEach(b => b.onclick = () => {
   if (!state.isAdmin) return;
-  admDraft = state.people.map(p => ({ name: p.name, username: p.username || '', avatar: { ...p.avatar } }));
+  admDraft = state.people.map(p => ({ name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role) }));
   admOpen = -1;
   document.getElementById('admList').innerHTML = '';
   paintPending(); paintAdmin(); openDlg(settingsDlg);
@@ -882,8 +905,8 @@ document.getElementById('admSave').onclick = async () => {
     const d = admDraft[i], p = state.people[i];
     const name = d.name.trim() || p.name, username = d.username.trim().toLowerCase();
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast(`Usuario inválido para ${name}.`); return; }
-    const changed = name !== p.name || (username || '') !== (p.username || '') || d.avatar.icon !== p.avatar.icon || d.avatar.color !== p.avatar.color;
-    if (changed && !(await savePerson(p.id, { name, username: username || null, avatar: d.avatar }))) return;
+    const changed = name !== p.name || (username || '') !== (p.username || '') || d.avatar.icon !== p.avatar.icon || d.avatar.color !== p.avatar.color || d.role !== cleanRole(p.role);
+    if (changed && !(await savePerson(p.id, { name, username: username || null, avatar: d.avatar, role: d.role }))) return;
   }
   settingsDlg.close(); toast('Equipo guardado');
 };
@@ -894,11 +917,7 @@ document.addEventListener('click', e => {
   if (!b) return;
   const d = parseYmd(b.dataset.date);
   const ce = canEdit(b.dataset.pid, d);
-  if (!ce.ok){
-    const en = entry(b.dataset.pid, d);
-    toast(en.note && en.s !== 'F' ? `Nota: ${en.note}` : ce.why);
-    return;
-  }
+  if (!ce.ok){ openDayInfo(b.dataset.pid, b.dataset.date, ce.why); return; }
   if (!state.editing){ state.editing = true; renderAll(); }
   openEditor(b.dataset.pid, b.dataset.date);
 });
@@ -1085,7 +1104,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
 document.getElementById('gateOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 document.getElementById('gateRetry').onclick = () => location.reload();
 
-function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
+function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
 function rowToDay(r){ (state.days[r.person_id] ||= {})[r.day] = { s: r.status, note: r.note || '' }; }
 function rowToAct(r){ return { id: String(r.id), at: Date.parse(r.at), author: r.author, changes: r.changes || [] }; }
 
@@ -1136,7 +1155,29 @@ async function startLive(session){
   const t = hoyReal();
   await Promise.all([ loadRange(addDays(t, -40), addDays(t, 110)), loadActivity() ]);
   renderAll();
-  sb.channel('calendario')
+  subscribeLive();
+  // Ponerse al día al volver a la pestaña, al recuperar internet y cada minuto (respaldo)
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshLive(); });
+  window.addEventListener('online', () => { refreshLive(); subscribeLive(); });
+  setInterval(() => { if (!document.hidden) refreshLive(); }, 60000);
+}
+// Vuelve a pedir a la base lo que se está viendo (por si se perdió algún aviso en vivo)
+let refreshing = false;
+async function refreshLive(){
+  if (state.mode !== 'live' || !sb || refreshing) return;
+  refreshing = true;
+  try {
+    loadedRanges.clear();
+    await Promise.all([ loadActivity(), loadPeople().catch(() => {}) ]);
+    ensureVisibleRange();
+    renderAll();
+  } finally { refreshing = false; }
+}
+let liveChannel = null;
+function setSync(ok){ state.liveOk = ok; renderControls(); }
+function subscribeLive(){
+  if (liveChannel) sb.removeChannel(liveChannel);
+  liveChannel = sb.channel('calendario')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, ({ eventType, new: n, old: o }) => {
       if (eventType === 'DELETE'){ if (o && state.days[o.person_id]) delete state.days[o.person_id][o.day]; }
       else rowToDay(n);
@@ -1161,7 +1202,15 @@ async function startLive(session){
       state.isAdmin = meNow.is_admin;
       renderAll();
     })
-    .subscribe();
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED'){ setSync(true); refreshLive(); }
+      // Si la conexión se cae, avisar y reintentar en unos segundos
+      else if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(status)){
+        setSync(false);
+        clearTimeout(subscribeLive.retry);
+        subscribeLive.retry = setTimeout(() => { if (!state.liveOk) subscribeLive(); }, 5000);
+      }
+    });
 }
 let recovering = /type=recovery/.test(location.hash + location.search);
 async function connect(){
