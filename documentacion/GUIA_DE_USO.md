@@ -82,4 +82,4 @@ También puedes cambiar entre **modo claro y oscuro** con 🌙 / ☀️.
 
 ## Correos de actualizaciones
 
-En **Mi perfil** activa **Recibir correos de actualizaciones** para que te llegue un correo cada vez que alguien del equipo sube cambios. No recibes correo de tus propios cambios. Puedes apagarlo cuando quieras en el mismo lugar.
+En **Mi perfil** activa **Recibir correos de actualizaciones** para recibir un **resumen** de los cambios de cada persona: el correo sale unos 10 minutos después de que esa persona termina de subir cambios, aunque haya subido varias veces. No recibes correo de tus propios cambios. Puedes apagarlo cuando quieras en el mismo lugar.
