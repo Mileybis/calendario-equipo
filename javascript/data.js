@@ -5,10 +5,9 @@
    ===================================================================== */
 
 // Feriados de Panamá (días no laborables): "AAAA-MM-DD": "Nombre"
-// Oficiales + 2 y 4 de noviembre del calendario del equipo. Si un feriado oficial cae en domingo, se descansa el lunes.
+// Feriados oficiales. Si un feriado oficial cae en domingo, se descansa el lunes.
 const FERIADOS = {
   "2025-11-03": "Separación de Panamá de Colombia",
-  "2025-11-04": "Día de los Símbolos Patrios",
   "2025-11-05": "Consolidación de la Separación en Colón",
   "2025-11-10": "Primer Grito de Independencia en la Villa de Los Santos",
   "2025-11-28": "Independencia de Panamá de España",
@@ -19,9 +18,7 @@ const FERIADOS = {
   "2026-02-17": "Martes de Carnaval",
   "2026-04-03": "Viernes Santo",
   "2026-05-01": "Día del Trabajo",
-  "2026-11-02": "Día de los Difuntos",
   "2026-11-03": "Separación de Panamá de Colombia",
-  "2026-11-04": "Día de los Símbolos Patrios",
   "2026-11-05": "Consolidación de la Separación en Colón",
   "2026-11-10": "Primer Grito de Independencia en la Villa de Los Santos",
   "2026-12-08": "Día de la Madre",
@@ -30,9 +27,7 @@ const FERIADOS = {
   "2027-01-01": "Año Nuevo",
   "2027-02-09": "Martes de Carnaval",
   "2027-03-26": "Viernes Santo",
-  "2027-11-02": "Día de los Difuntos",
   "2027-11-03": "Separación de Panamá de Colombia",
-  "2027-11-04": "Día de los Símbolos Patrios",
   "2027-11-05": "Consolidación de la Separación en Colón",
   "2027-11-10": "Primer Grito de Independencia en la Villa de Los Santos",
   "2027-11-29": "Independencia de Panamá de España (se pasa del domingo)",
@@ -42,7 +37,6 @@ const FERIADOS = {
   "2028-02-29": "Martes de Carnaval",
   "2028-04-14": "Viernes Santo",
   "2028-05-01": "Día del Trabajo",
-  "2028-11-02": "Día de los Difuntos",
   "2028-11-03": "Separación de Panamá de Colombia",
   "2028-11-06": "Consolidación de la Separación en Colón (se pasa del domingo)",
   "2028-11-10": "Primer Grito de Independencia en la Villa de Los Santos",
@@ -55,7 +49,6 @@ const FERIADOS = {
   "2029-02-13": "Martes de Carnaval",
   "2029-03-30": "Viernes Santo",
   "2029-05-01": "Día del Trabajo",
-  "2029-11-02": "Día de los Difuntos",
   "2029-11-05": "Consolidación de la Separación en Colón",
   "2029-11-28": "Independencia de Panamá de España",
   "2029-12-20": "Día de los Caídos por la invasión de 1989",
@@ -65,7 +58,7 @@ const FERIADOS = {
   "2030-03-05": "Martes de Carnaval",
   "2030-04-19": "Viernes Santo",
   "2030-05-01": "Día del Trabajo",
-  "2030-11-04": "Separación de Panamá de Colombia (se pasa del domingo) / Día de los Símbolos Patrios",
+  "2030-11-04": "Separación de Panamá de Colombia (se pasa del domingo)",
   "2030-11-05": "Consolidación de la Separación en Colón",
   "2030-11-11": "Primer Grito de Independencia en la Villa de Los Santos (se pasa del domingo)",
   "2030-11-28": "Independencia de Panamá de España",
