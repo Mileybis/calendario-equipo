@@ -11,7 +11,7 @@
 // =====================================================================
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const ESPERA_MIN = 10;   // minutos sin cambios antes de enviar el resumen
+const ESPERA_MIN = 5;    // minutos sin cambios antes de enviar el resumen
 const APP_URL = 'https://mileybis.github.io/calendario-equipo/';
 const ESTADOS: Record<string, string> = {
   R: 'Remoto', O: 'Oficina', V: 'Vacaciones', I: 'Incapacidad',
