@@ -93,6 +93,9 @@ const state = {
 };
 const MAX_ACTIVIDAD = 300;   // cambios recientes que se cargan para Actualizaciones
 const personById = id => state.people.find(p => p.id === id);
+const rolOf = p => ROLES.find(r => r.id === p?.role) || ROLES.find(r => r.id === ROL_POR_DEFECTO);
+const cleanRole = r => ROLES.some(x => x.id === r) ? r : ROL_POR_DEFECTO;
+const roleOptions = sel => ROLES.map(r => `<option value="${r.id}" ${r.id === sel ? 'selected' : ''}>${r.label}</option>`).join('');
 const pendingCount = () => Object.keys(state.pending).length;
 
 /* ================= SEMANAS ================= */
@@ -186,9 +189,11 @@ function weekCheck(pid, mon, override){
   });
   // Ni los feriados ni las ausencias reducen los días remotos: siempre se permiten
   // REMOTO_POR_SEMANA (una semana de 4 días laborables también tiene 2 remotos).
+  // Los roles sinLimite (Gerente y superiores) pueden usar todos los días laborables.
   const work = 5 - c.F;
-  const tR = Math.min(REMOTO_POR_SEMANA, work);
-  return { ...c, tR, ok: c.R <= tR };
+  const sinLimite = rolOf(personById(pid)).sinLimite;
+  const tR = sinLimite ? work : Math.min(REMOTO_POR_SEMANA, work);
+  return { ...c, tR, sinLimite, ok: c.R <= tR };
 }
 function invalidPendingWeeks(){
   const seen = new Set(), bad = [];
@@ -454,9 +459,9 @@ function renderMine(){
   document.getElementById('view').innerHTML = `
     <div class="mine">
       <div class="panel">
-        <div class="me-name">${avatar(p)}<div><h2>${esc(p.name)}</h2><p class="me-sub" style="margin:0">${state.isAdmin ? 'Administrador' : 'Mi calendario'}</p></div></div>
+        <div class="me-name">${avatar(p)}<div><h2>${esc(p.name)}</h2><p class="me-sub" style="margin:0">${rolOf(p).label}${state.isAdmin ? ' · Administrador' : ''}</p></div></div>
         <div style="height:12px"></div>
-        ${weekNav(fw, `Remotos: ${w.R} de ${w.tR}`)}
+        ${weekNav(fw, w.sinLimite ? `Remotos: ${w.R} · sin límite` : `Remotos: ${w.R} de ${w.tR}`)}
         <ul class="day-list">${rows}</ul>
         <h3 class="sub">Resumen de la semana</h3>
         <div class="tally">${chips(tally)}</div>
@@ -756,11 +761,12 @@ function paintProfile(){
     ${profPicker ? pickerHTML(profDraft.avatar, profDraft.name) : ''}
     <div class="field"><label for="profName">Nombre</label><input id="profName" maxlength="30" value="${esc(profDraft.name)}"></div>
     <div class="field"><label for="profUser">Usuario</label><input id="profUser" maxlength="20" autocapitalize="none" spellcheck="false" value="${esc(profDraft.username)}"><small>Para entrar sin escribir tu correo. Solo minúsculas, números, punto o guion.</small></div>
+    <div class="field"><label for="profRole">Rol</label><select id="profRole" class="select">${roleOptions(profDraft.role)}</select><small>Gerente y superiores pueden poner días remotos sin límite. El martes es presencial para todos.</small></div>
     <button type="button" class="btn primary" id="profSave" style="margin-top:14px;width:100%">Guardar perfil</button>
     <hr class="sep">
     <div class="field"><label for="profPass">Cambiar contraseña</label><input id="profPass" type="password" minlength="6" placeholder="Nueva contraseña (mínimo 6 caracteres)" autocomplete="new-password"></div>
     <button type="button" class="btn" id="profPassBtn" style="margin-top:10px;width:100%">Guardar contraseña</button>`;
-  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; };
+  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; };
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
@@ -769,7 +775,7 @@ function paintProfile(){
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
     if (!name){ toast('Escribe tu nombre.'); return; }
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast('Usuario: 3 a 20 caracteres, solo minúsculas, números, punto o guion.'); return; }
-    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar });
+    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role });
     if (ok){ profileDlg.close(); toast('Perfil guardado'); }
   };
   body.querySelector('#profPassBtn').onclick = async () => {
@@ -781,23 +787,23 @@ function paintProfile(){
     else { body.querySelector('#profPass').value = ''; toast('Contraseña actualizada'); }
   };
 }
-async function savePerson(id, { name, username, avatar: av }){
+async function savePerson(id, { name, username, avatar: av, role: rawRole }){
   const i = state.people.findIndex(p => p.id === id);
-  const clean = cleanAvatar(av, i);
+  const clean = cleanAvatar(av, i), role = cleanRole(rawRole);
   if (state.mode === 'live' && sb){
-    const { error } = await sb.from('people').update({ name, username, avatar_icon: clean.icon, avatar_color: clean.color }).eq('id', id);
+    const { error } = await sb.from('people').update({ name, username, avatar_icon: clean.icon, avatar_color: clean.color, role }).eq('id', id);
     if (error){
       toast(error.code === '23505' ? `El usuario "${username}" ya está en uso.` : 'No se pudo guardar. Intenta de nuevo.');
       return false;
     }
   }
-  Object.assign(state.people[i], { name, username, avatar: clean });
+  Object.assign(state.people[i], { name, username, avatar: clean, role });
   renderAll();
   return true;
 }
 document.querySelectorAll('.js-me').forEach(b => b.onclick = () => {
   const p = personById(state.me); if (!p) return;
-  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar } };
+  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role) };
   profPicker = false; paintProfile(); openDlg(profileDlg);
 });
 document.getElementById('profileClose').onclick = () => profileDlg.close();
@@ -835,6 +841,7 @@ function paintAdmin(){
   const box = document.getElementById('admList');
   box.querySelectorAll('[data-adm-name]').forEach(inp => { admDraft[+inp.dataset.admName].name = inp.value; });
   box.querySelectorAll('[data-adm-user]').forEach(inp => { admDraft[+inp.dataset.admUser].username = inp.value; });
+  box.querySelectorAll('[data-adm-role]').forEach(sel => { admDraft[+sel.dataset.admRole].role = sel.value; });
   box.innerHTML = state.people.map((p, i) => {
     const d = admDraft[i];
     return `<div class="adm-row">
@@ -844,6 +851,7 @@ function paintAdmin(){
         <input class="user" data-adm-user="${i}" maxlength="20" value="${esc(d.username)}" placeholder="usuario" aria-label="Usuario" autocapitalize="none">
         ${p.id === state.me ? '' : `<button type="button" class="icon-btn rm" data-remove="${i}" title="Quitar del equipo" aria-label="Quitar a ${esc(p.name)} del equipo">${ic('trash')}</button>`}
       </div>
+      <select class="select adm-role" data-adm-role="${i}" aria-label="Rol de ${esc(d.name)}">${roleOptions(d.role)}</select>
       ${admOpen === i ? pickerHTML(d.avatar, d.name) : ''}
     </div>`;
   }).join('');
@@ -870,7 +878,7 @@ function paintAdmin(){
 }
 document.querySelectorAll('.js-settings').forEach(b => b.onclick = () => {
   if (!state.isAdmin) return;
-  admDraft = state.people.map(p => ({ name: p.name, username: p.username || '', avatar: { ...p.avatar } }));
+  admDraft = state.people.map(p => ({ name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role) }));
   admOpen = -1;
   document.getElementById('admList').innerHTML = '';
   paintPending(); paintAdmin(); openDlg(settingsDlg);
@@ -882,8 +890,8 @@ document.getElementById('admSave').onclick = async () => {
     const d = admDraft[i], p = state.people[i];
     const name = d.name.trim() || p.name, username = d.username.trim().toLowerCase();
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast(`Usuario inválido para ${name}.`); return; }
-    const changed = name !== p.name || (username || '') !== (p.username || '') || d.avatar.icon !== p.avatar.icon || d.avatar.color !== p.avatar.color;
-    if (changed && !(await savePerson(p.id, { name, username: username || null, avatar: d.avatar }))) return;
+    const changed = name !== p.name || (username || '') !== (p.username || '') || d.avatar.icon !== p.avatar.icon || d.avatar.color !== p.avatar.color || d.role !== cleanRole(p.role);
+    if (changed && !(await savePerson(p.id, { name, username: username || null, avatar: d.avatar, role: d.role }))) return;
   }
   settingsDlg.close(); toast('Equipo guardado');
 };
@@ -1085,7 +1093,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
 document.getElementById('gateOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 document.getElementById('gateRetry').onclick = () => location.reload();
 
-function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
+function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
 function rowToDay(r){ (state.days[r.person_id] ||= {})[r.day] = { s: r.status, note: r.note || '' }; }
 function rowToAct(r){ return { id: String(r.id), at: Date.parse(r.at), author: r.author, changes: r.changes || [] }; }
 
