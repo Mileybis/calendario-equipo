@@ -282,8 +282,9 @@ function renderControls(){
     b.innerHTML = ic('settings') + (n ? `<span class="badge">${n}</span>` : '');
   });
   const sync = document.getElementById('sync');
-  sync.className = 'sync' + (state.mode === 'live' ? ' live' : '');
-  sync.querySelector('span').textContent = state.mode === 'live' ? 'En vivo con tu equipo' : state.mode === 'local' ? 'Modo de prueba (sin conexión)' : 'Conectando…';
+  const vivo = state.mode === 'live' && state.liveOk !== false;
+  sync.className = 'sync' + (vivo ? ' live' : '');
+  sync.querySelector('span').textContent = state.mode === 'live' ? (vivo ? 'En vivo con tu equipo' : 'Reconectando…') : state.mode === 'local' ? 'Modo de prueba (sin conexión)' : 'Conectando…';
   document.getElementById('editBtn').hidden = state.editing;
   document.body.classList.toggle('editing', state.editing);
   document.getElementById('tabTeam').setAttribute('aria-selected', state.view === 'team');
@@ -681,6 +682,20 @@ function openEditor(pid, dateStr){
   input.onkeydown = ev => { if (ev.key === 'Enter' && editing.s){ ev.preventDefault(); body.querySelector('#edApply').click(); } };
   openDlg(editorDlg);
 }
+// Solo ver: detalle de un día que no se puede editar (de otra persona o pasado)
+function openDayInfo(pid, dateStr, why){
+  const d = parseYmd(dateStr), p = personById(pid), e = entry(pid, d);
+  document.getElementById('dayEditorBody').innerHTML = `
+    <div class="modal-body">
+      <div class="prof-head">${avatar(p)}<div><h3>${esc(p?.name || '')}</h3><p class="hint" style="margin:0">${cap(DIAS_LARGO[d.getDay()])} ${d.getDate()} de ${MESES[d.getMonth()]}</p></div></div>
+      <div class="info-status">${e.s === 'N' ? '<span class="chip sm N">Sin definir</span>' : statusPill(e)}</div>
+      <div class="info-note">${e.note ? `"${esc(e.note)}"` : '<span class="hint">Sin nota</span>'}</div>
+      <p class="hint info-why">${ic('lock', 'sm')} ${esc(why || 'Solo lectura')}</p>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" id="infoClose">Cerrar</button></div>`;
+  document.getElementById('infoClose').onclick = () => editorDlg.close();
+  openDlg(editorDlg);
+}
 function applyEdit(){
   const { pid, date } = editing;
   const d = parseYmd(date);
@@ -902,11 +917,7 @@ document.addEventListener('click', e => {
   if (!b) return;
   const d = parseYmd(b.dataset.date);
   const ce = canEdit(b.dataset.pid, d);
-  if (!ce.ok){
-    const en = entry(b.dataset.pid, d);
-    toast(en.note && en.s !== 'F' ? `Nota: ${en.note}` : ce.why);
-    return;
-  }
+  if (!ce.ok){ openDayInfo(b.dataset.pid, b.dataset.date, ce.why); return; }
   if (!state.editing){ state.editing = true; renderAll(); }
   openEditor(b.dataset.pid, b.dataset.date);
 });
@@ -1144,7 +1155,29 @@ async function startLive(session){
   const t = hoyReal();
   await Promise.all([ loadRange(addDays(t, -40), addDays(t, 110)), loadActivity() ]);
   renderAll();
-  sb.channel('calendario')
+  subscribeLive();
+  // Ponerse al día al volver a la pestaña, al recuperar internet y cada minuto (respaldo)
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshLive(); });
+  window.addEventListener('online', () => { refreshLive(); subscribeLive(); });
+  setInterval(() => { if (!document.hidden) refreshLive(); }, 60000);
+}
+// Vuelve a pedir a la base lo que se está viendo (por si se perdió algún aviso en vivo)
+let refreshing = false;
+async function refreshLive(){
+  if (state.mode !== 'live' || !sb || refreshing) return;
+  refreshing = true;
+  try {
+    loadedRanges.clear();
+    await Promise.all([ loadActivity(), loadPeople().catch(() => {}) ]);
+    ensureVisibleRange();
+    renderAll();
+  } finally { refreshing = false; }
+}
+let liveChannel = null;
+function setSync(ok){ state.liveOk = ok; renderControls(); }
+function subscribeLive(){
+  if (liveChannel) sb.removeChannel(liveChannel);
+  liveChannel = sb.channel('calendario')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, ({ eventType, new: n, old: o }) => {
       if (eventType === 'DELETE'){ if (o && state.days[o.person_id]) delete state.days[o.person_id][o.day]; }
       else rowToDay(n);
@@ -1169,7 +1202,15 @@ async function startLive(session){
       state.isAdmin = meNow.is_admin;
       renderAll();
     })
-    .subscribe();
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED'){ setSync(true); refreshLive(); }
+      // Si la conexión se cae, avisar y reintentar en unos segundos
+      else if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(status)){
+        setSync(false);
+        clearTimeout(subscribeLive.retry);
+        subscribeLive.retry = setTimeout(() => { if (!state.liveOk) subscribeLive(); }, 5000);
+      }
+    });
 }
 let recovering = /type=recovery/.test(location.hash + location.search);
 async function connect(){

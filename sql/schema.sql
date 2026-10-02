@@ -27,6 +27,7 @@ create table if not exists public.people (
   role          text not null default 'asistente'
                 constraint people_role_check
                 check (role in ('socio','director','gerente_senior','gerente','supervisor','staff','asistente')),
+  notificar_correo boolean not null default false,
   user_id       uuid unique references auth.users(id) on delete set null
 );
 create unique index if not exists people_username_key on public.people (lower(username));
@@ -196,7 +197,7 @@ create policy "cada quien edita su perfil" on public.people for update to authen
   using (public.is_admin() or id = public.my_person_id())
   with check (public.is_admin() or id = public.my_person_id());
 revoke update on public.people from authenticated;
-grant update (name, username, avatar_icon, avatar_color, role) on public.people to authenticated;
+grant update (name, username, avatar_icon, avatar_color, role, notificar_correo) on public.people to authenticated;
 
 -- Calendario: todos lo ven; cada quien cambia solo el suyo desde esta semana; el admin, todo
 drop policy if exists "equipo ve calendario" on public.schedule;
