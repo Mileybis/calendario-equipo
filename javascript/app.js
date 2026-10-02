@@ -798,7 +798,7 @@ function paintProfile(){
     <div class="field"><label for="profUser">Usuario</label><input id="profUser" maxlength="20" autocapitalize="none" spellcheck="false" value="${esc(profDraft.username)}"><small>Para entrar sin escribir tu correo. Solo minúsculas, números, punto o guion.</small></div>
     <div class="field"><label for="profRole">Rol</label><select id="profRole" class="select">${roleOptions(profDraft.role)}</select><small>Gerente y superiores pueden poner días remotos sin límite. El martes es presencial para todos.</small></div>
     <label class="check-field"><input type="checkbox" id="profMail" ${profDraft.notificar ? 'checked' : ''}><span><b>Recibir correos de actualizaciones</b><small>Te llega un correo a ${esc(p.email || 'tu correo')} cada vez que alguien del equipo sube cambios.</small></span></label>
-    <label class="check-field"><input type="checkbox" id="profRemind" ${profDraft.recordar ? 'checked' : ''}><span><b>Recordatorio de los viernes</b><small>Si te faltan días por definir de la próxima semana, te llega un correo el viernes en la mañana.</small></span></label>
+    <label class="check-field"><input type="checkbox" id="profRemind" ${profDraft.recordar ? 'checked' : ''}><span><b>Recordatorios</b><small>Los viernes en la mañana te llega un correo si te faltan días por definir de la próxima semana.</small></span></label>
     <button type="button" class="btn primary" id="profSave" style="margin-top:14px;width:100%">Guardar perfil</button>
     <hr class="sep">
     <div class="field"><label for="profPass">Cambiar contraseña</label><input id="profPass" type="password" minlength="6" placeholder="Nueva contraseña (mínimo 6 caracteres)" autocomplete="new-password"></div>
