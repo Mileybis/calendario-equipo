@@ -43,6 +43,8 @@ Cada carpeta guarda **un solo tipo de código**. `index.html` se queda afuera po
 ```
 calendario-equipo/
 ├── index.html                 # HTML: página principal (debe quedarse en la raíz)
+├── manifest.webmanifest       # Datos de la app instalable (nombre, ícono, colores)
+├── sw.js                      # Service worker: permite instalarla en el celular
 ├── css/                       # CSS: diseño
 │   └── styles.css             # Colores, modo claro/oscuro y responsive
 ├── javascript/                # JavaScript: lógica
@@ -60,11 +62,15 @@ calendario-equipo/
 │       ├── 006_tipos_evento_permiso_voluntariado.sql
 │       ├── 007_roles.sql
 │       ├── 008_aviso_por_correo.sql
-│       └── 009_correo_resumen.sql
+│       ├── 009_correo_resumen.sql
+│       ├── 010_recordatorio_viernes.sql
+│       └── 011_correo_cada_minuto.sql
 ├── funciones/                 # Funciones del servidor (Supabase Edge Functions)
-│   └── notificar/index.ts     # Envía el correo de resumen de actualizaciones
+│   ├── notificar/index.ts     # Envía el correo de resumen de actualizaciones
+│   └── recordatorio/index.ts  # Recordatorio de los viernes (días sin definir)
 ├── imagenes/                  # Imágenes
 │   ├── favicon.svg            # Ícono de la pestaña
+│   ├── app/                   # Íconos de la app instalada en el celular
 │   └── robot.webp             # Mascota del equipo (pantalla de acceso)
 └── documentacion/             # Documentación
     ├── ARQUITECTURA.md        # Cómo está construida (diagramas, datos, seguridad)

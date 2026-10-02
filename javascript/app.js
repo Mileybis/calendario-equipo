@@ -1259,3 +1259,6 @@ document.querySelectorAll('[data-ico]').forEach(el => el.insertAdjacentHTML('aft
 setWeek(currentWeekMonday());
 connect();
 setInterval(renderFeed, 60000);
+
+// App instalable en el celular (ver sw.js)
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

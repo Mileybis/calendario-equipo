@@ -1,0 +1,16 @@
+{
+  "name": "Hybrid Work Planner",
+  "short_name": "Planner",
+  "description": "Planificación de días de oficina y remoto del equipo",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F4F6",
+  "theme_color": "#2A3DB5",
+  "icons": [
+    { "src": "imagenes/app/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "imagenes/app/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "imagenes/app/icono-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
