@@ -777,11 +777,12 @@ function paintProfile(){
     <div class="field"><label for="profName">Nombre</label><input id="profName" maxlength="30" value="${esc(profDraft.name)}"></div>
     <div class="field"><label for="profUser">Usuario</label><input id="profUser" maxlength="20" autocapitalize="none" spellcheck="false" value="${esc(profDraft.username)}"><small>Para entrar sin escribir tu correo. Solo minúsculas, números, punto o guion.</small></div>
     <div class="field"><label for="profRole">Rol</label><select id="profRole" class="select">${roleOptions(profDraft.role)}</select><small>Gerente y superiores pueden poner días remotos sin límite. El martes es presencial para todos.</small></div>
+    <label class="check-field"><input type="checkbox" id="profMail" ${profDraft.notificar ? 'checked' : ''}><span><b>Recibir correos de actualizaciones</b><small>Te llega un correo a ${esc(p.email || 'tu correo')} cada vez que alguien del equipo sube cambios.</small></span></label>
     <button type="button" class="btn primary" id="profSave" style="margin-top:14px;width:100%">Guardar perfil</button>
     <hr class="sep">
     <div class="field"><label for="profPass">Cambiar contraseña</label><input id="profPass" type="password" minlength="6" placeholder="Nueva contraseña (mínimo 6 caracteres)" autocomplete="new-password"></div>
     <button type="button" class="btn" id="profPassBtn" style="margin-top:10px;width:100%">Guardar contraseña</button>`;
-  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; };
+  const keep = () => { profDraft.name = body.querySelector('#profName').value; profDraft.username = body.querySelector('#profUser').value; profDraft.role = body.querySelector('#profRole').value; profDraft.notificar = body.querySelector('#profMail').checked; };
   body.querySelector('#profAv').onclick = () => { keep(); profPicker = !profPicker; paintProfile(); };
   body.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.color = +b.dataset.color; paintProfile(); });
   body.querySelectorAll('[data-icon]').forEach(b => b.onclick = () => { keep(); profDraft.avatar.icon = b.dataset.icon; paintProfile(); });
@@ -790,7 +791,7 @@ function paintProfile(){
     const name = profDraft.name.trim(), username = profDraft.username.trim().toLowerCase();
     if (!name){ toast('Escribe tu nombre.'); return; }
     if (username && !/^[a-z0-9._-]{3,20}$/.test(username)){ toast('Usuario: 3 a 20 caracteres, solo minúsculas, números, punto o guion.'); return; }
-    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role });
+    const ok = await savePerson(state.me, { name, username: username || null, avatar: profDraft.avatar, role: profDraft.role, notificar: profDraft.notificar });
     if (ok){ profileDlg.close(); toast('Perfil guardado'); }
   };
   body.querySelector('#profPassBtn').onclick = async () => {
@@ -802,23 +803,25 @@ function paintProfile(){
     else { body.querySelector('#profPass').value = ''; toast('Contraseña actualizada'); }
   };
 }
-async function savePerson(id, { name, username, avatar: av, role: rawRole }){
+async function savePerson(id, { name, username, avatar: av, role: rawRole, notificar }){
   const i = state.people.findIndex(p => p.id === id);
   const clean = cleanAvatar(av, i), role = cleanRole(rawRole);
+  const cambios = { name, username, avatar_icon: clean.icon, avatar_color: clean.color, role };
+  if (notificar !== undefined) cambios.notificar_correo = !!notificar;   // solo desde el propio perfil
   if (state.mode === 'live' && sb){
-    const { error } = await sb.from('people').update({ name, username, avatar_icon: clean.icon, avatar_color: clean.color, role }).eq('id', id);
+    const { error } = await sb.from('people').update(cambios).eq('id', id);
     if (error){
       toast(error.code === '23505' ? `El usuario "${username}" ya está en uso.` : 'No se pudo guardar. Intenta de nuevo.');
       return false;
     }
   }
-  Object.assign(state.people[i], { name, username, avatar: clean, role });
+  Object.assign(state.people[i], { name, username, avatar: clean, role }, notificar !== undefined ? { notificar: !!notificar } : {});
   renderAll();
   return true;
 }
 document.querySelectorAll('.js-me').forEach(b => b.onclick = () => {
   const p = personById(state.me); if (!p) return;
-  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role) };
+  profDraft = { name: p.name, username: p.username || '', avatar: { ...p.avatar }, role: cleanRole(p.role), notificar: !!p.notificar };
   profPicker = false; paintProfile(); openDlg(profileDlg);
 });
 document.getElementById('profileClose').onclick = () => profileDlg.close();
@@ -1104,7 +1107,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
 document.getElementById('gateOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 document.getElementById('gateRetry').onclick = () => location.reload();
 
-function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
+function rowToPerson(r, i){ return { id: r.id, name: r.name, email: r.email, username: r.username || '', is_admin: !!r.is_admin, approved: r.approved !== false, role: cleanRole(r.role), notificar: !!r.notificar_correo, avatar: cleanAvatar({ icon: r.avatar_icon, color: r.avatar_color }, i) }; }
 function rowToDay(r){ (state.days[r.person_id] ||= {})[r.day] = { s: r.status, note: r.note || '' }; }
 function rowToAct(r){ return { id: String(r.id), at: Date.parse(r.at), author: r.author, changes: r.changes || [] }; }
 
