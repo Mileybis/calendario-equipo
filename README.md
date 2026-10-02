@@ -59,9 +59,10 @@ calendario-equipo/
 │       ├── 005_login_google.sql
 │       ├── 006_tipos_evento_permiso_voluntariado.sql
 │       ├── 007_roles.sql
-│       └── 008_aviso_por_correo.sql
+│       ├── 008_aviso_por_correo.sql
+│       └── 009_correo_resumen.sql
 ├── funciones/                 # Funciones del servidor (Supabase Edge Functions)
-│   └── notificar/index.ts     # Envía el correo de cada actualización
+│   └── notificar/index.ts     # Envía el correo de resumen de actualizaciones
 ├── imagenes/                  # Imágenes
 │   ├── favicon.svg            # Ícono de la pestaña
 │   └── robot.webp             # Mascota del equipo (pantalla de acceso)
