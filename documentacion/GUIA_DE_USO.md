@@ -50,7 +50,7 @@ Al entrar ves **tu semana**: cada día con su estado, un resumen y tu **próximo
 En la pestaña **Equipo**, con el selector **Semana | Mes**:
 
 - **Semana:** todas las personas y los 5 días. Tu fila aparece resaltada.
-- **Mes:** cada día muestra 🏢 oficina (incluye evento, permiso y voluntariado), 🏠 remoto y 🌴 ausentes (vacaciones e incapacidad). **Toca un día** para ver la lista completa de ese día.
+- **Mes:** cada día muestra 🏢 oficina (incluye evento y voluntariado), 🏠 remoto (incluye permiso) y 🌴 ausentes (vacaciones e incapacidad). **Toca un día** para ver la lista completa de ese día.
 
 El panel **Detalles** muestra año fiscal, quincena(s), días laborables y feriados de la semana o del mes.
 
