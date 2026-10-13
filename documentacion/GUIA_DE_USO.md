@@ -18,7 +18,7 @@ Manual rápido para usar la aplicación de control de días de **oficina**, **tr
 
 | Regla | Detalle |
 |---|---|
-| 🔒 **Martes presencial** | Siempre Oficina. Se puede marcar cualquier ausencia (Vacaciones, Incapacidad, Evento, Permiso, Voluntariado), pero no Remoto. |
+| 🔒 **Martes presencial** | Siempre Oficina. Se puede marcar cualquier otra opción (Vacaciones, Incapacidad, Evento, Permiso, Voluntariado), pero no Remoto. |
 | 🏠 **Máximo 2 días remotos** por semana | Los feriados no cuentan como remoto: en una semana con feriado siguen permitidos 2 días remotos. Ir más días a la oficina siempre está permitido. |
 | 👔 **Roles** | Cada persona elige su rol en **Mi perfil**. Gerente, Gerente Senior, Director y Socio pueden poner días remotos sin límite; Supervisor, Staff y Asistente, máximo 2. El martes es presencial para todos. |
 | 📅 **Desde esta semana en adelante** | No se pueden cambiar semanas pasadas. |
@@ -50,7 +50,7 @@ Al entrar ves **tu semana**: cada día con su estado, un resumen y tu **próximo
 En la pestaña **Equipo**, con el selector **Semana | Mes**:
 
 - **Semana:** todas las personas y los 5 días. Tu fila aparece resaltada.
-- **Mes:** cada día muestra 🏢 oficina, 🏠 remoto y 🌴 ausentes. **Toca un día** para ver la lista completa de ese día.
+- **Mes:** cada día muestra 🏢 oficina (incluye evento y voluntariado), 🏠 remoto (incluye permiso) y 🌴 ausentes (vacaciones e incapacidad). **Toca un día** para ver la lista completa de ese día.
 
 El panel **Detalles** muestra año fiscal, quincena(s), días laborables y feriados de la semana o del mes.
 

@@ -15,10 +15,18 @@ const ESTADOS = {
   F: { icon: '', label: 'Feriado' }
 };
 const EDITABLES = ['R', 'O', 'V', 'I', 'E', 'P', 'VL'];
-// Días en que la persona no está ni en oficina ni en remoto
-const AUSENCIAS = ['V', 'I', 'E', 'P', 'VL'];
+// Días en que la persona no trabaja
+const AUSENCIAS = ['V', 'I'];
+// Días que en los resúmenes cuentan como oficina (se trabaja fuera de casa)
+// o como remoto (permiso: se puede seguir trabajando desde casa).
+// No gastan los días remotos de la semana.
+const COMO_OFICINA = ['E', 'VL'];
+const COMO_REMOTO = ['P'];
+const esOficina = s => s === 'O' || COMO_OFICINA.includes(s);
 const emptyCounts = () => Object.fromEntries(Object.keys(ESTADOS).map(k => [k, 0]));
 const ausentes = c => AUSENCIAS.reduce((n, k) => n + c[k], 0);
+const enOficina = c => COMO_OFICINA.reduce((n, k) => n + c[k], c.O);
+const enRemoto = c => COMO_REMOTO.reduce((n, k) => n + c[k], c.R);
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DIAS_CORTO = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const DIAS_LARGO = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -305,10 +313,10 @@ function renderSummary(){
     for (let i = 1; i <= last; i++){ const d = new Date(state.year, state.month, i); if (isWorkday(d)) work.push(d); }
     const c = emptyCounts();
     work.forEach(d => state.people.forEach(p => { c[entry(p.id, d).s]++; }));
-    const total = work.length * n || 1, aus = ausentes(c);
+    const total = work.length * n || 1, aus = ausentes(c), ofi = enOficina(c), rem = enRemoto(c);
     el.innerHTML =
-      statHTML('O', 'building', c.O, 'Días en oficina', c.O / total * 100) +
-      statHTML('R', 'home', c.R, 'Días en remoto', c.R / total * 100) +
+      statHTML('O', 'building', ofi, 'Días en oficina', ofi / total * 100) +
+      statHTML('R', 'home', rem, 'Días en remoto', rem / total * 100) +
       statHTML('V', 'door-exit', aus, 'Días de ausencia', aus / total * 100) +
       statHTML('N', 'help-circle', c.N, 'Días sin definir', c.N / total * 100) +
       statHTML('L', 'calendar-week', work.length, `Días laborables · ${MESES[state.month]}`, 100);
@@ -321,10 +329,10 @@ function renderSummary(){
   const val = x => off ? '—' : x;
   const lbl = s => off ? offMsg : `${s} hoy`;
   const tip = x => off ? '' : `${x} de ${plural(n, 'persona', 'personas')}`;
-  const wi = weekInfo(state.weekStart), aus = c ? ausentes(c) : 0;
+  const wi = weekInfo(state.weekStart), aus = c ? ausentes(c) : 0, ofi = c ? enOficina(c) : 0, rem = c ? enRemoto(c) : 0;
   el.innerHTML =
-    statHTML('O', 'building', val(c?.O), lbl('En oficina'), pct(c?.O), tip(c?.O)) +
-    statHTML('R', 'home', val(c?.R), lbl('En remoto'), pct(c?.R), tip(c?.R)) +
+    statHTML('O', 'building', val(ofi), lbl('En oficina'), pct(ofi), tip(ofi)) +
+    statHTML('R', 'home', val(rem), lbl('En remoto'), pct(rem), tip(rem)) +
     statHTML('V', 'door-exit', val(aus), lbl('Ausentes'), pct(aus), tip(aus)) +
     statHTML('N', 'help-circle', val(c?.N), lbl('Sin definir'), pct(c?.N), tip(c?.N)) +
     statHTML('L', 'calendar-week', wi.work, 'Días laborables · semana', wi.work * 20);
@@ -390,16 +398,16 @@ function renderTeamMonth(){
     const h = holidayOf(d);
     const cls = ['mcell', h ? 'hol' : '', sameDay(d, t) ? 'today' : '', sameDay(d, sel) ? 'sel' : ''].join(' ');
     if (h) return `<button type="button" class="${cls}" data-mday="${ymd(d)}" title="${esc('Feriado: ' + h)}"><span class="md">${d.getDate()}</span><span class="mh">Feriado</span></button>`;
-    const c = countsFor(d), aus = ausentes(c);
+    const c = countsFor(d), aus = ausentes(c), ofi = enOficina(c), rem = enRemoto(c);
     const pills = [
-      c.O ? `<i class="O" title="En oficina">${ic('building')} ${c.O}</i>` : '',
-      c.R ? `<i class="R" title="Remoto">${ic('home')} ${c.R}</i>` : '',
-      aus ? `<i class="V" title="Ausentes: vacaciones, incapacidad, evento, permiso o voluntariado">${ic('door-exit')} ${aus}</i>` : ''
+      ofi ? `<i class="O" title="En oficina (incluye evento y voluntariado)">${ic('building')} ${ofi}</i>` : '',
+      rem ? `<i class="R" title="Remoto (incluye permiso)">${ic('home')} ${rem}</i>` : '',
+      aus ? `<i class="V" title="Ausentes: vacaciones o incapacidad">${ic('door-exit')} ${aus}</i>` : ''
     ].join('');
     return `<button type="button" class="${cls}" data-mday="${ymd(d)}">
       <span class="md">${d.getDate()}</span>
       <span class="mstats">${pills || '<em>Sin definir</em>'}</span>
-      <span class="mbar">${['O','R',...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</span>
+      <span class="mbar">${['O',...COMO_OFICINA,'R',...COMO_REMOTO,...AUSENCIAS].map(k => c[k] ? `<i class="${k}" style="width:${c[k] / n * 100}%"></i>` : '').join('')}</span>
     </button>`;
   };
   document.getElementById('view').innerHTML = `<div class="panel team-month">
@@ -454,7 +462,7 @@ function renderMine(){
     if (isWorkday(d) && entry(p.id, d).s === 'O'){ nextTxt = `${DIAS_LARGO[d.getDay()]} ${d.getDate()}${d.getMonth() !== t.getMonth() ? ' de ' + MESES[d.getMonth()] : ''}`; break; }
   }
   const todayE = isWorkday(t) ? entry(p.id, t) : null;
-  const chips = o => ['O','R',...AUSENCIAS,'N'].filter(k => o[k] > 0 || k === 'O' || k === 'R').map(k => `<span class="chip ${k}">${ESTADOS[k].icon} ${ESTADOS[k].label}: ${o[k]}</span>`).join('');
+  const chips = o => ['O','R',...COMO_OFICINA,...COMO_REMOTO,...AUSENCIAS,'N'].filter(k => o[k] > 0 || k === 'O' || k === 'R').map(k => `<span class="chip ${k}">${ESTADOS[k].icon} ${ESTADOS[k].label}: ${o[k]}</span>`).join('');
   const weeks = weeksOfMonth(state.year, state.month);
 
   document.getElementById('view').innerHTML = `
@@ -501,18 +509,18 @@ function renderThisWeek(){
         const hoy = sameDay(d, t);
         const head = `<div class="tw-head">${DIAS_CORTO[d.getDay()]} ${d.getDate()}${hoy ? '<span class="tw-today">Hoy</span>' : ''}</div>`;
         if (holidayOf(d)) return `<div class="tw-day ${hoy ? 'is-today' : ''}">${head}<div class="tw-hol">Feriado</div><div class="tw-rest">${esc(holidayOf(d))}</div></div>`;
-        const c = countsFor(d), enOficina = state.people.filter(p => entry(p.id, d).s === 'O');
-        const aus = ausentes(c);
-        const rest = c.O === n && n ? ['Todo el equipo'] : [
-          c.R ? `${ic('home')} ${c.R} en remoto` : '',
+        const c = countsFor(d), quienes = state.people.filter(p => esOficina(entry(p.id, d).s));
+        const aus = ausentes(c), rem = enRemoto(c);
+        const rest = quienes.length === n && n ? ['Todo el equipo'] : [
+          rem ? `${ic('home')} ${rem} en remoto` : '',
           aus ? `${ic('door-exit')} ${plural(aus, 'ausente', 'ausentes')}` : '',
           c.N ? `${ic('help-circle')} ${c.N} sin definir` : ''
         ].filter(Boolean);
         return `<div class="tw-day ${hoy ? 'is-today' : ''}">
           ${head}
           ${isLockedDay(d) ? `<div class="tw-lock">${ic('lock')} Presencial</div>` : ''}
-          <div class="tw-big"><b>${c.O}</b><span>en oficina</span></div>
-          ${enOficina.length ? `<div class="tw-av">${enOficina.slice(0, 6).map(inicial).join('')}${enOficina.length > 6 ? `<i class="more">+${enOficina.length - 6}</i>` : ''}</div>` : `<div class="tw-none">${hoy || d < t ? 'Nadie' : 'Nadie todavía'}</div>`}
+          <div class="tw-big"><b>${quienes.length}</b><span>en oficina</span></div>
+          ${quienes.length ? `<div class="tw-av">${quienes.slice(0, 6).map(inicial).join('')}${quienes.length > 6 ? `<i class="more">+${quienes.length - 6}</i>` : ''}</div>` : `<div class="tw-none">${hoy || d < t ? 'Nadie' : 'Nadie todavía'}</div>`}
           ${rest.length ? `<div class="tw-rest">${rest.map(r => `<div>${r}</div>`).join('')}</div>` : ''}
         </div>`;
       }).join('')}
@@ -677,7 +685,7 @@ function openEditor(pid, dateStr){
       <div class="opts" role="group" aria-label="Estado del día" style="margin-top:14px">
         ${EDITABLES.map(k => `<button type="button" class="opt ${k}" data-s="${k}" aria-pressed="${editing.s === k}" ${k === 'R' && rDisabled ? 'disabled' : ''}><span class="e">${ESTADOS[k].icon}</span>${ESTADOS[k].label}</button>`).join('')}
       </div>
-      ${locked ? `<div class="lock-note">${ic('lock')} ${MENSAJE_BLOQUEO}. Puedes marcar oficina o cualquier ausencia, pero no remoto.</div>`
+      ${locked ? `<div class="lock-note">${ic('lock')} ${MENSAJE_BLOQUEO}. Puedes marcar cualquier opción menos remoto.</div>`
         : !remoteOk ? `<div class="lock-note">${ic('home')} Pasaste tus días remotos: esta semana ya tienes ${plural(REMOTO_POR_SEMANA, 'día remoto', 'días remotos')}. Para usar este día, primero pasa otro día a oficina.</div>` : ''}
       <div class="field">
         <label for="noteInput">Nota (opcional)</label>
