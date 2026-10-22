@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#BFE3CF"/>
+    <path d="M0 88 H120 V120 H0 Z" fill="#DDF1E5"/>
+    <polygon points="76,88 98,72 100,80 80,94" fill="#D9661E"/>
+    <polygon points="86,81 89,79 90,84" fill="#2A1C16"/>
+    <polygon points="94,75 97,73 98,78" fill="#2A1C16"/>
+    <polygon points="44,94 60,94 60,72 48,72" fill="#F28A2E"/>
+    <polygon points="60,94 76,94 72,72 60,72" fill="#D9661E"/>
+    <polygon points="54,94 60,94 60,76 56,76" fill="#FFF6EC"/>
+    <polygon points="60,94 66,94 64,76 60,76" fill="#EFE3D6"/>
+    <polygon points="45,80 50,82 46,84" fill="#2A1C16"/>
+    <polygon points="75,80 70,82 74,84" fill="#2A1C16"/>
+    <polygon points="38,46 39,32 50,39" fill="#F28A2E"/>
+    <polygon points="41,43 41,36 47,40" fill="#FFF6EC"/>
+    <polygon points="82,46 81,32 70,39" fill="#D9661E"/>
+    <polygon points="79,43 79,36 73,40" fill="#EFE3D6"/>
+    <polygon points="38,46 60,38 60,74 46,71 36,59" fill="#F28A2E"/>
+    <polygon points="60,38 82,46 84,59 74,71 60,74" fill="#D9661E"/>
+    <polygon points="36,59 49,58 60,74 46,71" fill="#FFF6EC"/>
+    <polygon points="84,59 71,58 60,74 74,71" fill="#EFE3D6"/>
+    <polygon points="53,60 60,57 60,70" fill="#FFF6EC"/>
+    <polygon points="60,57 67,60 60,70" fill="#EFE3D6"/>
+    <polygon points="57.5,39 62.5,39 60,48" fill="#2A1C16"/>
+    <polygon points="51,41 55,40 53,46" fill="#2A1C16"/>
+    <polygon points="69,41 65,40 67,46" fill="#2A1C16"/>
+    <polygon points="38,49 46,50 39,53" fill="#2A1C16"/>
+    <polygon points="82,49 74,50 81,53" fill="#2A1C16"/>
+    <polygon points="37,55 44,55.5 38,57.5" fill="#2A1C16"/>
+    <polygon points="83,55 76,55.5 82,57.5" fill="#2A1C16"/>
+    <circle cx="51" cy="51.5" r="2.2" fill="#2A1C16"/>
+    <circle cx="69" cy="51.5" r="2.2" fill="#2A1C16"/>
+    <circle cx="51.7" cy="50.8" r="0.75" fill="#FFFFFF"/>
+    <circle cx="69.7" cy="50.8" r="0.75" fill="#FFFFFF"/>
+    <polygon points="57,59 63,59 60,62.5" fill="#E07A8A"/>
+    <path d="M60 62.5 V64.5 M60 64.5 Q57.5 66.5 55.5 65.5 M60 64.5 Q62.5 66.5 64.5 65.5" stroke="#5A3A2A" stroke-width="1" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

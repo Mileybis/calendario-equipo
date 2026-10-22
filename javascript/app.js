@@ -38,7 +38,8 @@ const AVATARES = [
 // Ilustraciones de imagenes/avatares/<id>.svg; se guardan como 'ilus:<id>'
 const ILUSTRACIONES = [
   ['panda', 'Panda'], ['tortuga', 'Tortuga'], ['nutria', 'Nutria'], ['delfin', 'Delfín'], ['gato', 'Gato'], ['zorro', 'Zorro'],
-  ['conejo', 'Conejo'], ['pinguino', 'Pingüino'], ['perro', 'Perro'], ['koala', 'Koala'], ['buho', 'Búho'], ['elefante', 'Elefante']
+  ['conejo', 'Conejo'], ['pinguino', 'Pingüino'], ['perro', 'Perro'], ['koala', 'Koala'], ['buho', 'Búho'], ['elefante', 'Elefante'],
+  ['leon', 'León'], ['tigre', 'Tigre'], ['dragon', 'Dragón chino']
 ];
 const ILUS_IDS = ILUSTRACIONES.map(([id]) => 'ilus:' + id);
 // Cambiar este número cuando se redibuje un avatar, para que los navegadores no usen la copia vieja
@@ -46,7 +47,7 @@ const VERSION_AVATARES = 2;
 const ilusSrc = icon => `imagenes/avatares/${icon.slice(5)}.svg?v=${VERSION_AVATARES}`;
 // Los emojis de antes se muestran con su ilustración equivalente
 const EMOJI_A_ILUS = { '🐼': 'panda', '🐢': 'tortuga', '🦦': 'nutria', '🐬': 'delfin', '🐱': 'gato', '🦊': 'zorro',
-  '🐰': 'conejo', '🐧': 'pinguino', '🐶': 'perro', '🐨': 'koala', '🦉': 'buho' };
+  '🐰': 'conejo', '🐧': 'pinguino', '🐶': 'perro', '🐨': 'koala', '🦉': 'buho', '🦁': 'leon', '🐯': 'tigre', '🐉': 'dragon' };
 const ANIMALES = ['🐼','🦊','🐱','🐶','🐰','🐻','🐨','🐯','🦁','🐸','🐵','🐧','🦉','🐙','🦄','🐢','🐹','🐮','🐷','🐥','🦋','🐝','🐬','🐳','🦥','🦦','🐿️','🦔','🐞','🦩'];
 
 /* ================= UTILIDADES ================= */
