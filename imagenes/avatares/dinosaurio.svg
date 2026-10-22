@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 104 104">
+  <defs><clipPath id="c"><circle cx="60" cy="62" r="52"/></clipPath></defs>
+  <g clip-path="url(#c)" stroke-linejoin="round">
+    <rect width="120" height="120" fill="#BFE4F7"/>
+    <path d="M0 90 H120 V120 H0 Z" fill="#E0F2FB"/>
+    <polygon points="79,82 81,75 85,81" fill="#5C913B"/>
+    <polygon points="87,78 90,71 92,77" fill="#5C913B"/>
+    <polygon points="68,97 68,86 82,81 97,69 93,84 80,94" fill="#5C913B"/>
+    <polygon points="68,86 82,81 97,69 88,81" fill="#77B255"/>
+    <polygon points="45,97 60,97 60,62 48,64" fill="#8CC765"/>
+    <polygon points="75,97 60,97 60,62 72,64" fill="#77B255"/>
+    <polygon points="54,97 60,97 60,73 55,74" fill="#D4EDB8"/>
+    <polygon points="66,97 60,97 60,73 65,74" fill="#C2E2A4"/>
+    <polygon points="49,78 42,82 44,85 50,82" fill="#8CC765"/>
+    <polygon points="71,78 78,82 76,85 70,82" fill="#77B255"/>
+    <polygon points="40,52 44,40 52,35 60,34 60,70 48,68 40,60" fill="#8CC765"/>
+    <polygon points="80,52 76,40 68,35 60,34 60,70 72,68 80,60" fill="#77B255"/>
+    <polygon points="44,60 60,57 60,70 48,68" fill="#B5DE97"/>
+    <polygon points="76,60 60,57 60,70 72,68" fill="#A1D07F"/>
+    <polygon points="57,35 60,27 63,35" fill="#5C913B"/>
+    <polygon points="49,37 50,30 55,35.5" fill="#5C913B"/>
+    <polygon points="71,37 70,30 65,35.5" fill="#4A7A2E"/>
+    <circle cx="51" cy="49" r="4.4" fill="#FFFFFF"/>
+    <circle cx="69" cy="49" r="4.4" fill="#F1F2F6"/>
+    <circle cx="51.4" cy="49.6" r="2.9" fill="#1F2A22"/>
+    <circle cx="68.6" cy="49.6" r="2.9" fill="#1F2A22"/>
+    <circle cx="52.4" cy="48.5" r="1.05" fill="#FFFFFF"/>
+    <circle cx="69.6" cy="48.5" r="1.05" fill="#FFFFFF"/>
+    <circle cx="57" cy="61" r="0.8" fill="#3E6B27"/>
+    <circle cx="63" cy="61" r="0.8" fill="#3E6B27"/>
+    <ellipse cx="45.5" cy="56.5" rx="2.8" ry="1.6" fill="#F6A6BA"/>
+    <ellipse cx="74.5" cy="56.5" rx="2.8" ry="1.6" fill="#EE97AD"/>
+    <path d="M56.5 64 Q60 67 63.5 64" stroke="#3E6B27" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
