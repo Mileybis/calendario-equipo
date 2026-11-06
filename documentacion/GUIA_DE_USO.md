@@ -79,6 +79,7 @@ También puedes cambiar entre **modo claro y oscuro** con 🌙 / ☀️.
 
 - Editar nombres, usuarios y avatares de cualquier persona.
 - Cambiar días de cualquier persona y de semanas pasadas.
+- Poner más de 2 días remotos a cualquier persona en semanas especiales. El martes sigue siendo presencial.
 - **🗑️ Quitar** a alguien del equipo (borra su cuenta y sus días).
 
 ## Correos de actualizaciones
