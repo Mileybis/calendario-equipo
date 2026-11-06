@@ -199,8 +199,9 @@ function weekCheck(pid, mon, override){
   // Ni los feriados ni las ausencias reducen los días remotos: siempre se permiten
   // REMOTO_POR_SEMANA (una semana de 4 días laborables también tiene 2 remotos).
   // Los roles sinLimite (Gerente y superiores) pueden usar todos los días laborables.
+  // Quien administra tampoco tiene límite, para las semanas especiales de cualquier persona.
   const work = 5 - c.F;
-  const sinLimite = rolOf(personById(pid)).sinLimite;
+  const sinLimite = rolOf(personById(pid)).sinLimite || state.isAdmin;
   const tR = sinLimite ? work : Math.min(REMOTO_POR_SEMANA, work);
   return { ...c, tR, sinLimite, ok: c.R <= tR };
 }
